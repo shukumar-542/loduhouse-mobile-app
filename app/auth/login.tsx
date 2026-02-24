@@ -56,7 +56,7 @@ const Login = () => {
 
   useEffect(() => {
     if (successMessage && !error) {
-      router.replace("/tabs/home");
+      router.replace("/subscription/subscriptions");
     }
   }, [successMessage, error, router]);
 

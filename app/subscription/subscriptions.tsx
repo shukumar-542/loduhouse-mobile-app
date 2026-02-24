@@ -56,7 +56,7 @@ const Subscriptions = () => {
               title="Unlock Exiting Features"
               description="Unlimited visits, clients, and media uploads to master your craft"
             />
-            <TrialBanner to="/auth/login" />
+            <TrialBanner to="/tabs/home" />
             <PlanSelector />
             <SubscriptionButton
               label="Subscribe via Stripe"

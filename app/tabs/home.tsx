@@ -91,7 +91,7 @@ const Home = () => {
             <ServiceFilter onSearch={(val) => console.log(val)} />
           </View>
           {/* Stats */}
-          <View className="flex-row justify-between items-center mt-6">
+          <View className="flex-row justify-between items-center mt-9">
             <StatCard label="Total Clients" value={totalClients} />
             <StatCard label="Recent Visits" value={recentVisits} />
           </View>
