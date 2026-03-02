@@ -20,6 +20,8 @@ import { Check } from "lucide-react-native";
 import ShowToast from "@/components/shared/ShowToast";
 import { useRouter, useFocusEffect, useNavigation } from "expo-router";
 import useLogin from "@/services/hooks/auth/useLogin";
+import useGoogleLogin from "@/services/hooks/auth/useGoogleLogin";
+import GoogleAuthWebView from "@/components/shared/GoogleAuthWebView";
 
 const Login = () => {
   const {
@@ -35,6 +37,16 @@ const Login = () => {
     login,
   } = useLogin();
 
+  const {
+    initiateGoogleLogin,
+    authUrl,
+    webViewVisible,
+    closeWebView,
+    loading: googleLoading,
+    error: googleError,
+    setError: setGoogleError,
+  } = useGoogleLogin();
+
   const { width } = Dimensions.get("window");
   const router = useRouter();
   const navigation = useNavigation();
@@ -49,7 +61,6 @@ const Login = () => {
         "hardwareBackPress",
         () => true,
       );
-
       return () => subscription.remove();
     }, [navigation]),
   );
@@ -60,7 +71,7 @@ const Login = () => {
     }
   }, [successMessage, error, router]);
 
-  const handleLoginGoogle = () => {};
+  const displayError = error || googleError;
 
   return (
     <View className="flex-1 bg-[#0F0918]">
@@ -85,8 +96,10 @@ const Login = () => {
             />
 
             <ShowToast
-              message={error || successMessage}
-              type={error ? "error" : successMessage ? "success" : "info"}
+              message={displayError || successMessage}
+              type={
+                displayError ? "error" : successMessage ? "success" : "info"
+              }
             />
 
             <View>
@@ -96,7 +109,6 @@ const Login = () => {
                 value={email}
                 onChangeText={setEmail}
               />
-
               <PasswordInput
                 label="Password"
                 placeholder="Enter your password"
@@ -116,11 +128,8 @@ const Login = () => {
                   >
                     {rememberMe && <Check size={14} color="#22c55e" />}
                   </View>
-
                   <Text
-                    className={`text-xs ${
-                      rememberMe ? "text-white" : "text-gray-400"
-                    }`}
+                    className={`text-xs ${rememberMe ? "text-white" : "text-gray-400"}`}
                   >
                     Remember me
                   </Text>
@@ -138,7 +147,7 @@ const Login = () => {
               <Button
                 label={loading ? "Logging in..." : "Login"}
                 onPress={login}
-                disabled={loading}
+                disabled={loading || googleLoading}
               />
             </View>
 
@@ -162,14 +171,22 @@ const Login = () => {
               </Text>
 
               <GoogleButton
-                label="Sign In with Google"
-                onPress={handleLoginGoogle}
+                label={googleLoading ? "Loading..." : "Sign In with Google"}
+                onPress={initiateGoogleLogin}
                 SvgComponent={googleSvg}
+                disabled={googleLoading || loading}
               />
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <GoogleAuthWebView
+        visible={webViewVisible}
+        authUrl={authUrl ?? ""}
+        onClose={closeWebView}
+        onError={(msg) => setGoogleError(msg)}
+      />
     </View>
   );
 };

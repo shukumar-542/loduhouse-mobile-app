@@ -1,30 +1,36 @@
-import React, { useState, useCallback } from "react";
-import {
-  View,
-  KeyboardAvoidingView,
-  StatusBar,
-  ScrollView,
-  Platform,
-} from "react-native";
+import React, { useEffect, useCallback } from "react";
+import { View, KeyboardAvoidingView, ScrollView, Platform } from "react-native";
 import { useRouter } from "expo-router";
 
 import { EmailInput } from "@/components/shared/EmailField";
 import { GeneralText } from "@/components/shared/GeneralText";
 import { Button } from "@/components/shared/Button";
+import ShowToast from "@/components/shared/ShowToast";
+
+import useOtp from "@/services/hooks/auth/useOtp";
 
 const EmailConfirmation = () => {
   const router = useRouter();
-  const [email, setEmail] = useState<string>("");
+  const { email, setEmail, sendLoading, sendError, sendSuccess, sendOtp } =
+    useOtp();
 
-  const confirmEmail = useCallback(() => {
-    if (!email.trim()) return; // Extra safety, though button is disabled
-    router.push({
-      pathname: "/auth/passwordOtpVerification",
-      params: { email },
-    });
-  }, [email, router]);
+  // Send OTP handler
+  const confirmEmail = useCallback(async () => {
+    if (!email.trim()) return;
+    await sendOtp();
+  }, [email, sendOtp]);
 
-  const isButtonDisabled = !email.trim(); // Disable if email is empty or just spaces
+  // Navigate to OTP screen when OTP is sent successfully
+  useEffect(() => {
+    if (sendSuccess) {
+      router.push({
+        pathname: "/auth/passwordOtpVerification",
+        params: { email },
+      });
+    }
+  }, [sendSuccess, router, email]);
+
+  const isButtonDisabled = !email.trim() || sendLoading;
 
   return (
     <View className="flex-1 bg-[#0F0B18]">
@@ -43,6 +49,11 @@ const EmailConfirmation = () => {
               description="Enter your email for verification"
             />
 
+            <ShowToast
+              message={sendError || sendSuccess}
+              type={sendError ? "error" : sendSuccess ? "success" : "info"}
+            />
+
             <EmailInput
               label="Email"
               placeholder="Enter your email"
@@ -51,9 +62,9 @@ const EmailConfirmation = () => {
             />
 
             <Button
-              label="Send Verification Code"
+              label={sendLoading ? "Sending..." : "Send Verification Code"}
               onPress={confirmEmail}
-              disabled={isButtonDisabled} // Button disabled when email empty
+              disabled={isButtonDisabled}
             />
           </View>
         </ScrollView>

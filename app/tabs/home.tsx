@@ -21,18 +21,26 @@ import StatCard from "@/components/shared/StatCard";
 import UserCard from "@/components/shared/userCard";
 import { useGetRecentlyViewed } from "@/services/hooks/home/useGetRecentlyViewed";
 import ServiceFilter from "@/components/home/ServiceFilter";
+import HomeSkeleton from "@/constants/skeletons/HomeSkeleton";
+
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigation = useNavigation();
   const route = useRouter();
 
-  const { recentlyViewed } = useGetRecentlyViewed();
-  const { profileImage, totalClients, recentVisits } = useGetProfileData();
-  const ProfileImage = Image.resolveAssetSource(profileImage);
+  // Profile image
+  const { profileImage } = useGetProfileData();
+  const ProfileImage = profileImage
+    ? Image.resolveAssetSource(profileImage)
+    : { uri: undefined };
 
-  const { clients, error, successMessage, searchClients } =
-    useGetSearchedClients();
+  // Recently viewed + stats from API
+  const { recentlyViewed, totalClients, recentVisits, isLoading, error } =
+    useGetRecentlyViewed();
 
+  const { clients, successMessage, searchClients } = useGetSearchedClients();
+
+  // Disable hardware back button
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({
@@ -47,19 +55,21 @@ const Home = () => {
     }, [navigation]),
   );
 
-  const handleImagePress = () => {
-    route.push("/tabs/settings");
-  };
-
+  // Handlers
+  const handleImagePress = () => route.push("/tabs/settings");
   const handleSearchSubmit = () => {
     if (!searchQuery.trim()) return;
     searchClients(searchQuery);
   };
 
+  // Loading state
+  if (isLoading) return <HomeSkeleton />;
+
   return (
     <View className="flex-1 bg-[#0F0B18]">
+      {/* Toast */}
       <ShowToast
-        message={error || successMessage}
+        message={error ? "Failed to load home data" : (successMessage ?? "")}
         type={error ? "error" : successMessage ? "success" : "info"}
       />
 
@@ -67,7 +77,7 @@ const Home = () => {
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        {/* FIXED TOP SECTION (Non-scrollable) */}
+        {/* Fixed top section */}
         <View className="px-6 pt-4">
           {/* Header */}
           <View className="flex-row justify-between items-center">
@@ -75,8 +85,11 @@ const Home = () => {
             <ImageNavigator
               imageSource={ProfileImage.uri}
               onPress={handleImagePress}
+              style={{ borderWidth: 2, borderColor: "#C9A367" }} // optional override
             />
           </View>
+
+          {/* Search & Filter */}
           <View className="mt-4 flex-row items-center">
             <View className="flex-1 mr-3">
               <SearchBox
@@ -86,23 +99,20 @@ const Home = () => {
                 onSubmitSearch={handleSearchSubmit}
               />
             </View>
-
-            {/* This takes only its own width (h-14 w-14) */}
             <ServiceFilter onSearch={(val) => console.log(val)} />
           </View>
+
           {/* Stats */}
           <View className="flex-row justify-between items-center mt-9">
             <StatCard label="Total Clients" value={totalClients} />
             <StatCard label="Recent Visits" value={recentVisits} />
           </View>
 
-          {/* List Title */}
-          {/* Section Header */}
+          {/* Recently Viewed Header */}
           <View className="flex-row justify-between items-end mt-8 mb-4">
             <Text className="text-white text-xl font-bold">
               Recently Viewed
             </Text>
-
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => route.push("/tabs/clients")}
@@ -113,29 +123,41 @@ const Home = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <FlatList
-          data={recentlyViewed}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <UserCard
-              name={item.name}
-              lastService={item.lastService}
-              imageUri={item.imageUri}
-              onPress={() =>
-                route.push({
-                  pathname: "/client/clientProfile",
-                  params: { id: item.id },
-                })
-              }
-            />
-          )}
-          contentContainerStyle={{
-            paddingHorizontal: 24,
-            paddingBottom:150,
-          }}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-        />
+
+        {/* Recently Viewed List */}
+        {recentlyViewed.length > 0 ? (
+          <FlatList
+            data={recentlyViewed ?? []}
+            keyExtractor={(item, index) =>
+              item?.id ? String(item.id) : `recent-${index}`
+            }
+            renderItem={({ item }) => {
+              if (!item) return null;
+
+              return (
+                <UserCard
+                  name={item.name}
+                  lastService={item.lastService}
+                  imageUri={item.imageUri}
+                  onPress={() =>
+                    route.push({
+                      pathname: "/client/clientProfile",
+                      params: { id: item.id },
+                    })
+                  }
+                />
+              );
+            }}
+            contentContainerStyle={{
+              paddingHorizontal: 24,
+              paddingBottom: 150,
+            }}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          />
+        ) : (
+          <HomeSkeleton />
+        )}
       </KeyboardAvoidingView>
     </View>
   );

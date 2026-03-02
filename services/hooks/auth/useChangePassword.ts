@@ -1,56 +1,50 @@
 import { useState } from "react";
+import { useResetPasswordMutation } from "@/services/api/authApi";
 
-const useChangePassword = () => {
+const useChangePassword = (email: string, otp: string) => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleChangePassword = async () => {
-    try {
-      setLoading(true);
+  const [changePasswordApi, { isLoading }] = useResetPasswordMutation();
+
+  const clearMessages = () => {
+    setTimeout(() => {
       setError(null);
       setSuccessMessage(null);
+    }, 3500);
+  };
 
-      // Validation
-      if (!newPassword || !confirmPassword) {
-        throw new Error("Please fill in all fields");
-      }
+  const handleChangePassword = async () => {
+    if (!newPassword || !confirmPassword) {
+      setError("Please fill all fields");
+      clearMessages();
+      return;
+    }
 
-      if (newPassword.length < 8) {
-        throw new Error("Password must be at least 8 characters long");
-      }
+    if (newPassword !== confirmPassword) {
+      setError("Passwords do not match");
+      clearMessages();
+      return;
+    }
 
-      if (newPassword !== confirmPassword) {
-        throw new Error("Passwords do not match");
-      }
+    try {
+      const response = await changePasswordApi({
+        email,
+        otp,
+        newPassword,
+        confirmPassword,
+      }).unwrap();
 
-      // TODO: Add your API call here
-      // await changePasswordAPI(newPassword);
-
-      // Show success message
-      setSuccessMessage("Password changed successfully!");
-
-      // Clear form
-      setNewPassword("");
-      setConfirmPassword("");
-
-      // Reset success message after delay
-      setTimeout(() => {
-        setSuccessMessage(null);
-      }, 3500);
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "An unexpected error occurred";
-
-      setError(errorMessage);
-
-      setTimeout(() => {
-        setError(null);
-      }, 3500);
+      setSuccessMessage(response?.message || "Password changed successfully");
+    } catch (err: any) {
+      console.log(err);
+      setError(
+        err?.data?.message || err?.message || "Failed to change password",
+      );
     } finally {
-      setLoading(false);
+      clearMessages();
     }
   };
 
@@ -59,7 +53,7 @@ const useChangePassword = () => {
     setNewPassword,
     confirmPassword,
     setConfirmPassword,
-    loading,
+    loading: isLoading,
     error,
     successMessage,
     handleChangePassword,

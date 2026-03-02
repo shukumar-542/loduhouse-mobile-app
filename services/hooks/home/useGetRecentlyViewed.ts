@@ -1,80 +1,31 @@
+import { useGetHomeDataQuery } from "@/services/api/homeApi";
 
+interface RecentlyViewedClient {
+  id: string;
+  name: string;
+  lastService: string;
+  imageUri: string;
+}
 
 export const useGetRecentlyViewed = () => {
+  const { data, isLoading, error } = useGetHomeDataQuery();
+
+  const recentlyViewed: RecentlyViewedClient[] =
+    data?.data?.recentlyViewed?.map((client: any) => ({
+      id: client.clientId,
+      name: client.clientName,
+      lastService: client.last,
+      imageUri: client.picture || "",
+    })) ?? [];
+
+  const totalClients = data?.data?.totalClients ?? 0;
+  const recentVisits = data?.data?.totalRecentVisits ?? 0;
+
   return {
-    recentlyViewed: [
-      {
-        id: "1",
-        name: "Isabella Rossi",
-        lastService: "Balayage & Cut",
-        imageUri: "https://i.pravatar.cc/150?u=isabella",
-      },
-      {
-        id: "2",
-        name: "Sophia Chen",
-        lastService: "Full Highlights",
-        imageUri: "https://i.pravatar.cc/150?u=sophia",
-      },
-      {
-        id: "3",
-        name: "Marcello V.",
-        lastService: "Men's Fade",
-        imageUri: "https://i.pravatar.cc/150?u=marcello",
-      },
-      {
-        id: "4",
-        name: "Isabella Rossi",
-        lastService: "Balayage & Cut",
-        imageUri: "https://i.pravatar.cc/150?u=isabella",
-      },
-      {
-        id: "5",
-        name: "Sophia Chen",
-        lastService: "Full Highlights",
-        imageUri: "https://i.pravatar.cc/150?u=sophia",
-      },
-      {
-        id: "6",
-        name: "Marcello V.",
-        lastService: "Men's Fade",
-        imageUri: "https://i.pravatar.cc/150?u=marcello",
-      },
-      {
-        id: "7",
-        name: "Isabella Rossi",
-        lastService: "Balayage & Cut",
-        imageUri: "https://i.pravatar.cc/150?u=isabella",
-      },
-      {
-        id: "8",
-        name: "Sophia Chen",
-        lastService: "Full Highlights",
-        imageUri: "https://i.pravatar.cc/150?u=sophia",
-      },
-      {
-        id: "9",
-        name: "Marcello V.",
-        lastService: "Men's Fade",
-        imageUri: "https://i.pravatar.cc/150?u=marcello",
-      },
-      {
-        id: "10",
-        name: "Isabella Rossi",
-        lastService: "Balayage & Cut",
-        imageUri: "https://i.pravatar.cc/150?u=isabella",
-      },
-      {
-        id: "11",
-        name: "Sophia Chen",
-        lastService: "Full Highlights",
-        imageUri: "https://i.pravatar.cc/150?u=sophia",
-      },
-      {
-        id: "12",
-        name: "Marcello V.",
-        lastService: "Men's Fade",
-        imageUri: "https://i.pravatar.cc/150?u=marcello",
-      },
-    ],
+    recentlyViewed,
+    totalClients,
+    recentVisits,
+    isLoading,
+    error,
   };
 };

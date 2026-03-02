@@ -18,7 +18,11 @@ const UserCard = ({ name, lastService, imageUri, onPress }: UserCardProps) => {
       <View className="flex-row items-center">
         {/* Profile Image */}
         <Image
-          source={{ uri: imageUri }}
+          source={
+            imageUri
+              ? { uri: imageUri }
+              : require("@/assets/images/Avater.png")
+          }
           className="w-16 h-16 rounded-full mr-4"
           resizeMode="cover"
         />

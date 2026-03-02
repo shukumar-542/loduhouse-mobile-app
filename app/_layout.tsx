@@ -14,6 +14,8 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { View, Platform } from "react-native";
+import { Provider } from "react-redux";
+import { store } from "@/store";
 
 ExpoSplashScreen.preventAutoHideAsync();
 
@@ -30,24 +32,16 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontError) {
-      console.error("Error loading fonts:", fontError);
-      throw fontError;
-    }
+    if (fontError) throw fontError;
   }, [fontError]);
 
   useEffect(() => {
-    if (fontsLoaded) {
-      ExpoSplashScreen.hideAsync();
-    }
+    if (fontsLoaded) ExpoSplashScreen.hideAsync();
   }, [fontsLoaded]);
+
   useEffect(() => {
     if (Platform.OS === "android") {
-      async function configureNavigationBar() {
-        await NavigationBar.setButtonStyleAsync("light");
-      }
-
-      configureNavigationBar();
+      NavigationBar.setButtonStyleAsync("light");
     }
   }, []);
 
@@ -56,6 +50,14 @@ export default function RootLayout() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    if (fontsLoaded && minTimeElapsed && !showSplash && !hasNavigated) {
+      setHasNavigated(true);
+      router.replace("/tabs/home");
+    }
+  }, [fontsLoaded, minTimeElapsed, showSplash, hasNavigated, router]);
+
+  // Splash screen
   if (!fontsLoaded || !minTimeElapsed || showSplash) {
     return (
       <SafeAreaProvider>
@@ -64,40 +66,41 @@ export default function RootLayout() {
           translucent={true}
           backgroundColor="transparent"
         />
-
         <SplashScreen onFinish={() => setShowSplash(false)} />
       </SafeAreaProvider>
     );
   }
 
+  // Main app content with manual insets
   return (
-    <SafeAreaProvider>
-      <View
-        style={{
-          flex: 1,
-          paddingTop: insets.top,
-          paddingBottom: insets.bottom * 0.5,
-          paddingLeft: insets.left,
-          paddingRight: insets.right,
-          backgroundColor: "#0F0B18",
-        }}
-      >
-        <StatusBar
-          style="light"
-          translucent={true}
-          backgroundColor="transparent"
-        />
-
-        <AlertNotificationRoot theme="dark">
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: "#000000" },
-              animation: "slide_from_right",
-            }}
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <View
+          style={{
+            flex: 1,
+            paddingTop: insets.top, // manual top inset
+            paddingBottom: insets.bottom, // manual bottom inset
+            paddingLeft: insets.left, // manual left inset
+            paddingRight: insets.right, // manual right inset
+            backgroundColor: "#0F0B18",
+          }}
+        >
+          <StatusBar
+            style="light"
+            translucent={true}
+            backgroundColor="transparent"
           />
-        </AlertNotificationRoot>
-      </View>
-    </SafeAreaProvider>
+          <AlertNotificationRoot theme="dark">
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: "#0F0B18" },
+                animation: "slide_from_right",
+              }}
+            />
+          </AlertNotificationRoot>
+        </View>
+      </SafeAreaProvider>
+    </Provider>
   );
 }
