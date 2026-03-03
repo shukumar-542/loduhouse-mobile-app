@@ -15,13 +15,27 @@ import UserCard from "@/components/shared/userCard";
 import useGetSearchedClients from "@/services/hooks/home/useGetSearchedClients";
 import { useGetAllClients } from "@/services/hooks/home/useGetAllClients";
 import ClientsSkeleton from "@/constants/skeletons/ClientSkeleton";
-
+import { useFocusEffect } from "expo-router";
+import { useCallback } from "react";
 const clients = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
-  const { clients, isLoading, isFetching, error, loadMore, handleRefresh } =
-    useGetAllClients();
+  const {
+    clients,
+    isLoading,
+    isFetching,
+    error,
+    loadMore,
+    handleRefresh, // already defined in your hook
+  } = useGetAllClients();
+
+
+  useFocusEffect(
+    useCallback(() => {
+      handleRefresh();
+    }, [handleRefresh]),
+  );
 
   const { successMessage, searchClients } = useGetSearchedClients();
 
@@ -61,6 +75,7 @@ const clients = () => {
           data={clients}
           keyExtractor={(item) => item.id}
           onRefresh={handleRefresh}
+          
           refreshing={isFetching}
           onEndReached={loadMore}
           onEndReachedThreshold={0.5}

@@ -174,7 +174,7 @@ const Login = () => {
                 label={googleLoading ? "Loading..." : "Sign In with Google"}
                 onPress={initiateGoogleLogin}
                 SvgComponent={googleSvg}
-                disabled={googleLoading || loading}
+                disabled={googleLoading}
               />
             </View>
           </View>

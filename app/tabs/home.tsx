@@ -9,6 +9,7 @@ import {
   Platform,
   TouchableOpacity,
 } from "react-native";
+
 import { useNavigation, useFocusEffect, useRouter } from "expo-router";
 import SvgIcon from "@/components/shared/svgIcon";
 import AppLogo from "@/assets/images/SplashIcon.svg";
@@ -35,8 +36,21 @@ const Home = () => {
     : { uri: undefined };
 
   // Recently viewed + stats from API
-  const { recentlyViewed, totalClients, recentVisits, isLoading, error } =
-    useGetRecentlyViewed();
+ const {
+   recentlyViewed,
+   totalClients,
+   recentVisits,
+   isLoading,
+   isFetching,
+   error,
+   refetch,
+  } = useGetRecentlyViewed();
+    useFocusEffect(
+      useCallback(() => {
+        refetch();
+      }, [refetch]),
+    );
+
 
   const { clients, successMessage, searchClients } = useGetSearchedClients();
 

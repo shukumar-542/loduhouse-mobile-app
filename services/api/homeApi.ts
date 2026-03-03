@@ -24,6 +24,7 @@ export const homeApi = baseApi.injectEndpoints({
         url: "/clients/home",
         method: "GET",
       }),
+      providesTags: ["RecentClients"],
     }),
   }),
 });

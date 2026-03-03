@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
+import {
+  useGetAnalyticsQuery,
+  useGetRevenueBreakdownQuery,
+} from "@/services/api/analyticsApi";
 
 export type DayData = {
   day: string;
@@ -21,55 +23,17 @@ export type AnalyticsData = {
   months: string[];
 };
 
-// ─── Dummy Data ───────────────────────────────────────────────────────────────
-
-const DUMMY_DATA: AnalyticsData = {
-  todayTotal: 450.0,
-  todayService: 370,
-  todayTips: 80,
-  weekTotal: 3650,
-  weekGrowthPercent: 12,
-  tipsTotal: 700,
-  tipsRevenuePercent: 19,
-  chartData: [
-    { day: "Mon", service: 120, tips: 30 },
-    { day: "Tue", service: 180, tips: 50 },
-    { day: "Wed", service: 300, tips: 80 },
-    { day: "Thu", service: 400, tips: 100 },
-    { day: "Fri", service: 550, tips: 150 },
-    { day: "Sat", service: 750, tips: 200 },
-    { day: "Sun", service: 200, tips: 60 },
-  ],
-  years: ["2022", "2023", "2024", "2025", "2026"],
-  months: [
-    "Jan 01",
-    "Feb 01",
-    "Mar 01",
-    "Apr 01",
-    "May 01",
-    "Jun 05",
-    "Jul 01",
-    "Aug 01",
-    "Sep 01",
-    "Oct 01",
-    "Nov 01",
-    "Dec 01",
-  ],
-};
-
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-
 type UseAnalyticsReturn = {
   data: AnalyticsData | null;
-  initialLoading: boolean; // true only on very first load (no data yet)
-  refreshing: boolean; // true when re-fetching but data already exists
+  initialLoading: boolean; // true only during first load
+  refreshing: boolean; // true during subsequent refetches
   error: string | null;
   refetch: () => void;
 };
 
 export const useAnalytics = (
-  year?: string,
-  month?: string,
+  selectedYear?: string,
+  selectedMonthLabel?: string,
 ): UseAnalyticsReturn => {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -77,36 +41,113 @@ export const useAnalytics = (
   const [error, setError] = useState<string | null>(null);
   const isFirstLoad = useRef(true);
 
-  const fetchData = async () => {
-    try {
-      setError(null);
-
-      if (isFirstLoad.current) {
-        setInitialLoading(true);
-      } else {
-        // Has data already — show subtle refresh, keep old data visible
-        setRefreshing(true);
-      }
-
-      // TODO: Replace with real API call:
-      // const res = await fetch(`/api/analytics?year=${year}&month=${month}`);
-      // const json = await res.json();
-      // setData(json);
-
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      setData(DUMMY_DATA);
-    } catch (err) {
-      setError("Failed to load analytics data.");
-    } finally {
-      setInitialLoading(false);
-      setRefreshing(false);
-      isFirstLoad.current = false;
-    }
+  // Consistent month mapping (all "MMM 01")
+  const monthMap: Record<string, string> = {
+    "Jan 01": "01",
+    "Feb 01": "02",
+    "Mar 01": "03",
+    "Apr 01": "04",
+    "May 01": "05",
+    "Jun 01": "06",
+    "Jul 01": "07",
+    "Aug 01": "08",
+    "Sep 01": "09",
+    "Oct 01": "10",
+    "Nov 01": "11",
+    "Dec 01": "12",
   };
 
-  useEffect(() => {
-    fetchData();
-  }, [year, month]);
+  const getApiMonth = (): string | undefined => {
+    if (!selectedMonthLabel) return monthMap["Jan 01"];
+    return monthMap[selectedMonthLabel];
+  };
+  const apiMonth = getApiMonth();
 
-  return { data, initialLoading, refreshing, error, refetch: fetchData };
+  // RTK Query hooks with loading states
+  const {
+    data: analyticsResponse,
+    error: analyticsError,
+    isLoading: analyticsLoading,
+    refetch: refetchAnalytics,
+  } = useGetAnalyticsQuery(undefined);
+
+  const {
+    data: revenueResponse,
+    error: revenueError,
+    isLoading: revenueLoading,
+    refetch: refetchRevenue,
+  } = useGetRevenueBreakdownQuery(
+    { year: selectedYear || "2025", month: apiMonth! },
+    { skip: !selectedYear || !apiMonth },
+  );
+
+  // Combined loading state
+  const queriesLoading = analyticsLoading || revenueLoading;
+
+  // Fetch & map data
+  useEffect(() => {
+    if (queriesLoading) return; // Wait until both queries settle
+
+    const fetchData = async () => {
+      try {
+        setError(null);
+        if (isFirstLoad.current) setInitialLoading(true);
+        else setRefreshing(true);
+
+        if (analyticsError || revenueError) {
+          throw new Error("Failed to load analytics data.");
+        }
+
+        if (analyticsResponse?.data) {
+          const chartData: DayData[] = [];
+          if (revenueResponse?.data) {
+            Object.entries(revenueResponse.data).forEach(([day, val]) => {
+              const { service = 0, tips = 0 } = val as {
+                service?: number;
+                tips?: number;
+              };
+              chartData.push({ day, service, tips });
+            });
+          }
+
+          const mapped: AnalyticsData = {
+            todayTotal: analyticsResponse.data.todaysEarning.total,
+            todayService: analyticsResponse.data.todaysEarning.service,
+            todayTips: analyticsResponse.data.todaysEarning.tips,
+            weekTotal: analyticsResponse.data.thisWeek.totalEarning,
+            weekGrowthPercent: analyticsResponse.data.thisWeek.growthPercentage,
+            tipsTotal: analyticsResponse.data.tips.totalTips,
+            tipsRevenuePercent:
+              analyticsResponse.data.tips.tipsPercentageComparetotalEarning,
+            chartData,
+            years: ["2022", "2023", "2024", "2025", "2026"],
+            months: Object.keys(monthMap),
+          };
+
+          setData(mapped);
+        }
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setInitialLoading(false);
+        setRefreshing(false);
+        isFirstLoad.current = false;
+      }
+    };
+
+    fetchData();
+  }, [
+    queriesLoading,
+    analyticsResponse,
+    revenueResponse,
+    analyticsError,
+    revenueError,
+  ]);
+
+  const refetch = () => {
+    refetchAnalytics();
+    refetchRevenue();
+  };
+
+  return { data, initialLoading, refreshing, error, refetch };
 };

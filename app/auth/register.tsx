@@ -153,7 +153,7 @@ const Register = () => {
                 label={googleLoading ? "Loading..." : "Sign Up with Google"}
                 onPress={initiateGoogleLogin}
                 SvgComponent={googleSvg}
-                disabled={googleLoading || loading}
+                disabled={googleLoading }
               />
             </View>
 

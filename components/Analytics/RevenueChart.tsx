@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { DayData } from "@/services/hooks/analytics/useAnalytics";
 
-// Colors extracted from design
+// Colors
 const CARD_BG = "#101012";
 const CARD_BORDER = "#4F4F59";
 const SERVICE_COLOR = "#C9A367";
@@ -19,9 +19,10 @@ const SERVICE_DIM = "#C9A367";
 const TIPS_DIM = "#FFFFFF";
 const LABEL_COLOR = "#6B6B8A";
 const TOOLTIP_BG = "#101012";
-const DROPDOWN_BG = "#1E1A2A";
 
 const BAR_MAX_HEIGHT = 150;
+const BAR_WIDTH = 48;
+const TOOLTIP_OFFSET = 50; // Increased offset to ensure tooltip visibility
 
 type Props = {
   chartData: DayData[];
@@ -33,17 +34,21 @@ type Props = {
   onMonthChange: (m: string) => void;
 };
 
-// ─── Dropdown ─────────────────────────────────────────────────────────────────
+// Clean month string: extract only the month name (e.g., "Jun 05" → "Jun")
+const cleanMonthString = (month: string): string => {
+  return month.split(" ")[0];
+};
 
-type DropdownProps = {
+const Dropdown = ({
+  value,
+  options,
+  onSelect,
+}: {
   value: string;
   options: string[];
   onSelect: (val: string) => void;
-};
-
-const Dropdown = ({ value, options, onSelect }: DropdownProps) => {
+}) => {
   const [open, setOpen] = useState(false);
-
   return (
     <View>
       <Pressable
@@ -63,10 +68,8 @@ const Dropdown = ({ value, options, onSelect }: DropdownProps) => {
         <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "500" }}>
           {value}
         </Text>
-        {/* Chevron down - matches design */}
         <Text style={{ color: LABEL_COLOR, fontSize: 10 }}>▾</Text>
       </Pressable>
-
       <Modal
         visible={open}
         transparent
@@ -137,8 +140,6 @@ const Dropdown = ({ value, options, onSelect }: DropdownProps) => {
   );
 };
 
-// ─── Chart ────────────────────────────────────────────────────────────────────
-
 const RevenueChart = ({
   chartData,
   years,
@@ -148,9 +149,19 @@ const RevenueChart = ({
   onYearChange,
   onMonthChange,
 }: Props) => {
-  const [selectedIndex, setSelectedIndex] = useState(5); // Sat default
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
 
-  const maxValue = Math.max(...chartData.map((d) => d.service + d.tips));
+  const maxValue = Math.max(...chartData.map((d) => d.service + d.tips), 1);
+
+  // Scroll to the end (last items) when data changes
+  useEffect(() => {
+    if (scrollViewRef.current && chartData.length > 0) {
+      setTimeout(() => {
+        scrollViewRef.current?.scrollToEnd({ animated: false });
+      }, 100);
+    }
+  }, [chartData]);
 
   return (
     <View
@@ -160,9 +171,10 @@ const RevenueChart = ({
         borderWidth: 1,
         borderColor: CARD_BORDER,
         padding: 16,
+        overflow: "visible", // Crucial for Android to allow tooltip overflow
       }}
     >
-      {/* ── Header row ── */}
+      {/* Header */}
       <View
         style={{
           flexDirection: "row",
@@ -181,8 +193,6 @@ const RevenueChart = ({
         >
           Revenue Breakdown
         </Text>
-
-        {/* Two dropdowns */}
         <View style={{ flexDirection: "row", gap: 6 }}>
           <Dropdown
             value={selectedYear}
@@ -190,14 +200,19 @@ const RevenueChart = ({
             onSelect={onYearChange}
           />
           <Dropdown
-            value={selectedMonth}
-            options={months}
-            onSelect={onMonthChange}
+            value={cleanMonthString(selectedMonth)}
+            options={months.map(cleanMonthString)}
+            onSelect={(displayValue) => {
+              const original =
+                months.find((m) => cleanMonthString(m) === displayValue) ||
+                displayValue;
+              onMonthChange(original);
+            }}
           />
         </View>
       </View>
 
-      {/* ── Legend ── */}
+      {/* Legend */}
       <View style={{ flexDirection: "row", gap: 14, marginBottom: 18 }}>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
           <View
@@ -223,19 +238,25 @@ const RevenueChart = ({
         </View>
       </View>
 
-      {/* ── Bars ── */}
-      <View
+      <ScrollView
+        ref={scrollViewRef}
+        horizontal
+        showsHorizontalScrollIndicator={false}
         style={{
-          flexDirection: "row",
+          height: BAR_MAX_HEIGHT + 80, 
+          overflow: "hidden",
+        }}
+        contentContainerStyle={{
           alignItems: "flex-end",
-          justifyContent: "space-between",
-          height: BAR_MAX_HEIGHT + 32,
+          paddingHorizontal: 32, 
+          paddingRight: 48, 
+          paddingTop: 40,
         }}
       >
         {chartData.map((item, index) => {
-          const totalH =
-            ((item.service + item.tips) / maxValue) * BAR_MAX_HEIGHT;
-          const tipsH = (item.tips / (item.service + item.tips)) * totalH;
+          const total = item.service + item.tips;
+          const totalH = (total / maxValue) * BAR_MAX_HEIGHT;
+          const tipsH = (item.tips / total) * totalH || 0;
           const serviceH = totalH - tipsH;
           const isSelected = selectedIndex === index;
 
@@ -243,14 +264,17 @@ const RevenueChart = ({
             <Pressable
               key={item.day}
               onPress={() => setSelectedIndex(index)}
-              style={{ alignItems: "center", flex: 1 }}
+              style={{
+                alignItems: "center",
+                width: BAR_WIDTH,
+                marginHorizontal: 2,
+              }}
             >
-              {/* Tooltip */}
               {isSelected && (
                 <View
                   style={{
                     position: "absolute",
-                    bottom: BAR_MAX_HEIGHT - totalH + 30,
+                    bottom: BAR_MAX_HEIGHT - totalH + TOOLTIP_OFFSET,
                     backgroundColor: TOOLTIP_BG,
                     borderRadius: 10,
                     paddingHorizontal: 10,
@@ -297,7 +321,6 @@ const RevenueChart = ({
                 </View>
               )}
 
-              {/* Stacked bar */}
               <View
                 style={{
                   width: 26,
@@ -306,7 +329,6 @@ const RevenueChart = ({
                   overflow: "hidden",
                 }}
               >
-                {/* Tips - top segment */}
                 <View
                   style={{
                     height: tipsH,
@@ -314,7 +336,6 @@ const RevenueChart = ({
                     width: "100%",
                   }}
                 />
-                {/* Service - bottom segment */}
                 <View
                   style={{
                     height: serviceH,
@@ -324,7 +345,6 @@ const RevenueChart = ({
                 />
               </View>
 
-              {/* Day label */}
               <Text
                 style={{
                   color: isSelected ? "#FFFFFF" : LABEL_COLOR,
@@ -338,7 +358,7 @@ const RevenueChart = ({
             </Pressable>
           );
         })}
-      </View>
+      </ScrollView>
     </View>
   );
 };

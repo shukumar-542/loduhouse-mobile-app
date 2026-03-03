@@ -1,6 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, ScrollView, KeyboardAvoidingView, Text } from "react-native";
-
 import { useAnalytics } from "@/services/hooks/analytics/useAnalytics";
 import AnalyticsBoxes from "@/components/Analytics/AnalyticsBoxes";
 import AnalyticsHeader from "@/components/Analytics/AnalyticsHeader";
@@ -8,15 +7,30 @@ import RevenueChart from "@/components/Analytics/RevenueChart";
 import AnalyticsSkeleton from "@/constants/skeletons/AnalyticsSkeleton";
 
 const Analytics = () => {
-  const [selectedYear, setSelectedYear] = useState("2025");
-  const [selectedMonth, setSelectedMonth] = useState("Jun 05");
+  // Get current year and month in the format your hook expects (e.g., "2025", "Jun 05")
+  const getCurrentYear = () => new Date().getFullYear().toString();
+  const getCurrentMonth = () => {
+    const now = new Date();
+    const month = now.toLocaleString("default", { month: "short" }); // "Jun"
+    const day = "01"; // Always first day of month
+    return `${month} ${day}`;
+  };
+
+  const [selectedYear, setSelectedYear] = useState(getCurrentYear());
+  const [selectedMonth, setSelectedMonth] = useState(getCurrentMonth());
 
   const { data, initialLoading, error } = useAnalytics(
     selectedYear,
     selectedMonth,
   );
 
-  // ── Skeleton on first load (no data yet) ──────────────────────────────────
+  // If the current month isn't in the available months list, fallback to first month
+  useEffect(() => {
+    if (data?.months && !data.months.includes(selectedMonth)) {
+      setSelectedMonth(data.months[0]);
+    }
+  }, [data]);
+
   if (initialLoading) {
     return (
       <View style={{ flex: 1, backgroundColor: "#0D0A15" }}>
@@ -25,7 +39,6 @@ const Analytics = () => {
     );
   }
 
-  // ── Error (only if no cached data) ────────────────────────────────────────
   if (error && !data) {
     return (
       <View
@@ -51,7 +64,6 @@ const Analytics = () => {
     );
   }
 
-  // ── Main render — data always present here ─────────────────────────────────
   return (
     <View style={{ flex: 1, backgroundColor: "#0D0A15" }}>
       <KeyboardAvoidingView

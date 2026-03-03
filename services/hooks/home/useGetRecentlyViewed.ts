@@ -1,16 +1,10 @@
+// useGetRecentlyViewed.ts
 import { useGetHomeDataQuery } from "@/services/api/homeApi";
 
-interface RecentlyViewedClient {
-  id: string;
-  name: string;
-  lastService: string;
-  imageUri: string;
-}
-
 export const useGetRecentlyViewed = () => {
-  const { data, isLoading, error } = useGetHomeDataQuery();
+  const { data, isLoading, isFetching, error, refetch } = useGetHomeDataQuery();
 
-  const recentlyViewed: RecentlyViewedClient[] =
+  const recentlyViewed =
     data?.data?.recentlyViewed?.map((client: any) => ({
       id: client.clientId,
       name: client.clientName,
@@ -25,7 +19,9 @@ export const useGetRecentlyViewed = () => {
     recentlyViewed,
     totalClients,
     recentVisits,
-    isLoading,
+    isLoading, // true only on initial load
+    isFetching, // true for any background fetch (including refetch)
     error,
+    refetch, // function to manually trigger a fetch
   };
 };
