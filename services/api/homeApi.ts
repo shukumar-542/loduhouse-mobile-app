@@ -20,7 +20,6 @@ interface HomeResponse {
 export const homeApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getHomeData: builder.query<HomeResponse, void>({
-      // <-- void means no arg needed
       query: () => ({
         url: "/clients/home",
         method: "GET",

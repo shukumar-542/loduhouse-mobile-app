@@ -4,33 +4,38 @@ import {
   KeyboardAvoidingView,
   FlatList,
   Platform,
+  ActivityIndicator,
 } from "react-native";
-import {  useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import SvgIcon from "@/components/shared/svgIcon";
 import AppLogo from "@/assets/images/SplashIcon.svg";
-import useGetSearchedClients from "@/services/hooks/home/useGetSearchedClients";
 import SearchBox from "@/components/shared/SearchBox";
 import ShowToast from "@/components/shared/ShowToast";
-
 import UserCard from "@/components/shared/userCard";
-import { useGetRecentlyViewed } from "@/services/hooks/home/useGetRecentlyViewed";
+import useGetSearchedClients from "@/services/hooks/home/useGetSearchedClients";
+import { useGetAllClients } from "@/services/hooks/home/useGetAllClients";
+import ClientsSkeleton from "@/constants/skeletons/ClientSkeleton";
 
 const clients = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const route = useRouter();
-  const { recentlyViewed } = useGetRecentlyViewed();
-  const { error, successMessage, searchClients } =
-    useGetSearchedClients();
+  const router = useRouter();
+
+  const { clients, isLoading, isFetching, error, loadMore, handleRefresh } =
+    useGetAllClients();
+
+  const { successMessage, searchClients } = useGetSearchedClients();
 
   const handleSearchSubmit = () => {
     if (!searchQuery.trim()) return;
     searchClients(searchQuery);
   };
 
+  if (isLoading) return <ClientsSkeleton />;
+
   return (
     <View className="flex-1 bg-[#0F0B18]">
       <ShowToast
-        message={error || successMessage}
+        message={error ? "Failed to load clients" : (successMessage ?? "")}
         type={error ? "error" : successMessage ? "success" : "info"}
       />
 
@@ -38,17 +43,13 @@ const clients = () => {
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        {/* FIXED TOP SECTION (Non-scrollable) */}
         <View className="px-6 pt-4">
-          {/* Header */}
           <View className="flex-row justify-between items-center">
             <SvgIcon SvgComponent={AppLogo} />
           </View>
-
-          {/* Search */}
-          <View className="mt-4">
+          <View className="mt-4 mb-4">
             <SearchBox
-              placeholder="Search clients..."
+              placeholder="Search clients or Service Types"
               value={searchQuery}
               onChangeText={setSearchQuery}
               onSubmitSearch={handleSearchSubmit}
@@ -56,18 +57,20 @@ const clients = () => {
           </View>
         </View>
 
-        {/* SCROLLABLE BOTTOM SECTION (Only the List) */}
         <FlatList
-          
-          data={recentlyViewed}
-          keyExtractor={(item) => item.id.toString()}
+          data={clients}
+          keyExtractor={(item) => item.id}
+          onRefresh={handleRefresh}
+          refreshing={isFetching}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.5}
           renderItem={({ item }) => (
             <UserCard
               name={item.name}
-              lastService={item.lastService}
+              lastService={item.email}
               imageUri={item.imageUri}
               onPress={() =>
-                route.push({
+                router.push({
                   pathname: "/client/clientProfile",
                   params: { id: item.id },
                 })
