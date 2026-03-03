@@ -9,10 +9,15 @@ export const baseApi = createApi({
     prepareHeaders: async (headers) => {
       const token = await SecureStore.getItemAsync("access_token");
       if (token) headers.set("Authorization", `Bearer ${token}`);
-      headers.set("Content-Type", "application/json");
       return headers;
     },
   }),
-  tagTypes: ["Clients", "RecentClients", "Analytics", "RevenueBreakdown"],
+  tagTypes: [
+    "Clients",
+    "RecentClients",
+    "Analytics",
+    "RevenueBreakdown",
+    "Profile",
+  ],
   endpoints: () => ({}),
 });

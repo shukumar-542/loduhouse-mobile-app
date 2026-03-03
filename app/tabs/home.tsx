@@ -29,28 +29,30 @@ const Home = () => {
   const navigation = useNavigation();
   const route = useRouter();
 
-  // Profile image
-  const { profileImage } = useGetProfileData();
+  // ✅ Alias refetch from profile hook
+  const { profileImage, refetch: refetchProfile } = useGetProfileData();
   const ProfileImage = profileImage
     ? Image.resolveAssetSource(profileImage)
     : { uri: undefined };
 
-  // Recently viewed + stats from API
- const {
-   recentlyViewed,
-   totalClients,
-   recentVisits,
-   isLoading,
-   isFetching,
-   error,
-   refetch,
+  // ✅ Alias refetch from recently viewed hook
+  const {
+    recentlyViewed,
+    totalClients,
+    recentVisits,
+    isLoading,
+    isFetching,
+    error,
+    refetch: refetchRecentlyViewed,
   } = useGetRecentlyViewed();
-    useFocusEffect(
-      useCallback(() => {
-        refetch();
-      }, [refetch]),
-    );
 
+  // ✅ Call both refetches on screen focus
+  useFocusEffect(
+    useCallback(() => {
+      refetchProfile();
+      refetchRecentlyViewed();
+    }, [refetchProfile, refetchRecentlyViewed]),
+  );
 
   const { clients, successMessage, searchClients } = useGetSearchedClients();
 
@@ -99,7 +101,7 @@ const Home = () => {
             <ImageNavigator
               imageSource={ProfileImage.uri}
               onPress={handleImagePress}
-              style={{ borderWidth: 2, borderColor: "#C9A367" }} // optional override
+              style={{ borderWidth: 2, borderColor: "#C9A367" }}
             />
           </View>
 

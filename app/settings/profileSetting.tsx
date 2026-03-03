@@ -11,21 +11,19 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TextField } from "@/components/shared/TextField";
 import { MobileNumberInput } from "@/components/shared/PhoneNumberField";
-import { EmailInput } from "@/components/shared/EmailField";
 import Header from "@/components/shared/Header";
 import useEditUserProfile from "@/services/hooks/settings/useEditUserProfile";
 import UniversalMediaPicker, {
   MediaItem,
 } from "@/components/shared/UniversalMediaPicker";
 
-export default function profileSetting() {
+export default function ProfileSetting() {
   const {
     name,
     setName,
     phone,
     setPhone,
     email,
-    setEmail,
     location,
     setLocation,
     avatarUri,
@@ -35,7 +33,7 @@ export default function profileSetting() {
     successMessage,
     saveProfile,
   } = useEditUserProfile();
-
+console.log(phone)
   const [pickerVisible, setPickerVisible] = useState(false);
 
   const handleMediaPicked = (items: MediaItem[]) => {
@@ -49,7 +47,6 @@ export default function profileSetting() {
     <SafeAreaView className="flex-1 bg-[#0F0B18]">
       <Header title="Profile Setting" />
 
-      {/* Feedback Messages — outside ScrollView so they never overlap */}
       {(error || successMessage) && (
         <View className="px-5 pt-3">
           {error && (
@@ -74,7 +71,6 @@ export default function profileSetting() {
         className="flex-1 px-5 pt-6"
         keyboardShouldPersistTaps="handled"
       >
-        {/* Avatar */}
         <View className="items-center mb-10">
           <View className="relative w-24 h-24">
             <Image
@@ -93,7 +89,6 @@ export default function profileSetting() {
           </View>
         </View>
 
-        {/* Form Fields */}
         <TextField
           label="Your Name"
           placeholder="Enter your name"
@@ -108,11 +103,12 @@ export default function profileSetting() {
           onChangeText={setPhone}
         />
 
-        <EmailInput
+        <TextField
           label="Email"
-          placeholder="Enter your email"
           value={email}
-          onChangeText={setEmail}
+          editable={false}
+          placeholder="Your email address"
+          disabledClassName="bg-gray-800"
         />
 
         <TextField
@@ -123,7 +119,6 @@ export default function profileSetting() {
         />
       </ScrollView>
 
-      {/* Save Button */}
       <View className="px-5 pb-8">
         <TouchableOpacity
           onPress={saveProfile}

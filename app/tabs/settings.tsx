@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import {
   View,
   Text,
@@ -7,9 +7,11 @@ import {
   TouchableOpacity,
   Image,
   StyleSheet,
+  ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter } from "expo-router"; // or useNavigation from '@react-navigation/native'
+import { useRouter, useFocusEffect } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import {
   User,
   Crown,
@@ -21,18 +23,19 @@ import {
   ChevronRight,
 } from "lucide-react-native";
 
-// --- Reusable MenuItem Component ---
+import { useGetProfileData } from "@/services/hooks/home/useGetProfileData";
 
+// --- MenuItem Component (unchanged) ---
 type MenuItemProps = {
   icon: React.ElementType;
   label: string;
-  onPress: () => void; // Made mandatory for better UX
+  onPress: () => void;
   badge?: string;
   isLogout?: boolean;
   labelColor?: string;
 };
 
-export const MenuItem: React.FC<MenuItemProps> = ({
+const MenuItem: React.FC<MenuItemProps> = ({
   icon: Icon,
   label,
   onPress,
@@ -75,13 +78,23 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 };
 
 // --- Main Settings Screen ---
-
 const Settings = () => {
   const router = useRouter();
+  const { profileImage, fullName, email, isLoading, refetch } =
+    useGetProfileData();
 
-  const handleLogout = () => {
+  // Refetch data whenever the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      refetch();
+    }, [refetch]),
+  );
 
-    router.replace("/auth/login"); 
+  const handleLogout = async () => {
+    // Clear user data from secure storage
+    await SecureStore.deleteItemAsync("user_data");
+    // Navigate to login screen
+    router.replace("/auth/login");
   };
 
   return (
@@ -92,19 +105,21 @@ const Settings = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Header Section */}
+        {/* Header Section with dynamic user data */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Profile</Text>
 
           <View style={styles.avatarContainer}>
-            <Image
-              source={{ uri: "https://i.pravatar.cc/150?u=nick" }}
-              style={styles.avatarImage}
-            />
+            <Image source={profileImage} style={styles.avatarImage} />
+            {isLoading && (
+              <View style={styles.loadingOverlay}>
+                <ActivityIndicator size="small" color="#C9A367" />
+              </View>
+            )}
           </View>
 
-          <Text style={styles.userName}>Nick</Text>
-          <Text style={styles.userEmail}>nick@gmail.com</Text>
+          <Text style={styles.userName}>{fullName || "User"}</Text>
+          <Text style={styles.userEmail}>{email || "user@example.com"}</Text>
         </View>
 
         {/* Menu Items */}
@@ -176,7 +191,7 @@ const Settings = () => {
   );
 };
 
-// --- Styles (Kept identical to your last update) ---
+// --- Styles (unchanged, with added loadingOverlay) ---
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -204,10 +219,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#312E81",
     marginBottom: 15,
+    position: "relative", // for loading overlay
   },
   avatarImage: {
     width: "100%",
     height: "100%",
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.4)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   userName: {
     color: "#FFFFFF",

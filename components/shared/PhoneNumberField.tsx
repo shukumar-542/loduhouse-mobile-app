@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,13 +7,13 @@ import {
   Modal,
   FlatList,
 } from "react-native";
-import { useEffect } from "react";
 import { COUNTRY_CODES } from "@/constants/PhoneNumberDatabase";
+
 interface InputProps {
   label: string;
   placeholder: string;
-  value: string;
-  onChangeText: (text: string) => void;
+  value: string; // full phone number (e.g., "+8801712345678")
+  onChangeText: (text: string) => void; // returns full number
 }
 
 export const MobileNumberInput: React.FC<InputProps> = ({
@@ -24,8 +24,41 @@ export const MobileNumberInput: React.FC<InputProps> = ({
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [selectedCode, setSelectedCode] = useState(COUNTRY_CODES[17]); // Bangladesh default
+  const [localNumber, setLocalNumber] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Parse the full number into country code and local number when `value` changes
+  useEffect(() => {
+    if (!value) {
+      setLocalNumber("");
+      return;
+    }
+
+    // Try to find a matching country code from the beginning of the string
+    const matchedCode = COUNTRY_CODES.find((c) => value.startsWith(c.code));
+    if (matchedCode) {
+      setSelectedCode(matchedCode);
+      setLocalNumber(value.slice(matchedCode.code.length));
+    } else {
+      // No match – treat entire value as local number, keep default code
+      setLocalNumber(value);
+    }
+  }, [value]);
+
+  // When the user types in the local number, emit the full number
+  const handleLocalNumberChange = (text: string) => {
+    setLocalNumber(text);
+    onChangeText(selectedCode.code + text);
+  };
+
+  // When the user selects a new country code, emit the updated full number
+  const handleCodeSelect = (item: (typeof COUNTRY_CODES)[0]) => {
+    setSelectedCode(item);
+    setModalVisible(false);
+    setSearchQuery("");
+    onChangeText(item.code + localNumber);
+  };
 
   const filteredCountries = COUNTRY_CODES.filter(
     (item) =>
@@ -33,18 +66,12 @@ export const MobileNumberInput: React.FC<InputProps> = ({
       item.code.includes(searchQuery),
   );
 
-  const handleSelectCode = (item: (typeof COUNTRY_CODES)[0]) => {
-    setSelectedCode(item);
-    setModalVisible(false);
-    setSearchQuery("");
-  };
-
   return (
     <View className="mb-5 w-full">
       <Text className="text-white text-base font-bold mb-2 ml-1">{label}</Text>
       <View
         className={`${
-          isFocused ? "bg-[#121217]" : "bg-[]"
+          isFocused ? "bg-[#121217]" : ""
         } border border-[#C9A367] rounded-xl px-4 py-2 flex-row items-center`}
       >
         {/* Country Code Selector */}
@@ -63,8 +90,8 @@ export const MobileNumberInput: React.FC<InputProps> = ({
         <TextInput
           placeholder={placeholder}
           placeholderTextColor="white"
-          value={value}
-          onChangeText={onChangeText}
+          value={localNumber}
+          onChangeText={handleLocalNumberChange}
           keyboardType="phone-pad"
           autoCapitalize="none"
           onFocus={() => setIsFocused(true)}
@@ -73,7 +100,6 @@ export const MobileNumberInput: React.FC<InputProps> = ({
         />
       </View>
 
-      {/* Country Code Modal */}
       {/* Country Code Modal */}
       <Modal
         animationType="slide"
@@ -112,7 +138,7 @@ export const MobileNumberInput: React.FC<InputProps> = ({
               keyExtractor={(item, index) => `${item.code}-${index}`}
               renderItem={({ item }) => (
                 <TouchableOpacity
-                  onPress={() => handleSelectCode(item)}
+                  onPress={() => handleCodeSelect(item)}
                   className={`p-4 border-b border-[#2a2a2f] flex-row items-center ${
                     selectedCode.code === item.code ? "bg-[#1a1a1f]" : ""
                   }`}
