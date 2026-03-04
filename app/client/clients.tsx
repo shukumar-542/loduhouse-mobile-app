@@ -5,6 +5,7 @@ import {
   FlatList,
   Platform,
   ActivityIndicator,
+  Text,
 } from "react-native";
 import { useRouter } from "expo-router";
 import SvgIcon from "@/components/shared/svgIcon";
@@ -27,6 +28,7 @@ const ClientsScreen = () => {
     loadMore,
     hasMore,
     refreshing,
+    total,
     handleRefresh,
   } = useGetAllClients();
 
@@ -55,7 +57,15 @@ const ClientsScreen = () => {
             <SvgIcon SvgComponent={AppLogo} />
           </View>
         </View>
+        <View className="flex-row justify-between items-center px-6 mt-4 mb-3">
+          <Text className="text-white text-lg font-semibold">All Visits</Text>
 
+          <View className="bg-[#1E1B2E] border border-[#2E2A45] rounded-full px-3 py-1.5">
+            <Text className="text-[#C9A367] text-sm font-medium">
+              {total} total
+            </Text>
+          </View>
+        </View>
         <FlatList
           data={clients}
           keyExtractor={(item, index) => item.id ?? index.toString()}

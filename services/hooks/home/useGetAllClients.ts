@@ -19,7 +19,6 @@ export const useGetAllClients = () => {
     { page, limit: 10 },
     { refetchOnMountOrArgChange: true },
   );
-
   const totalPages = data?.meta?.totalPages ?? 1;
 
   // Map and deduplicate clients
@@ -27,12 +26,12 @@ export const useGetAllClients = () => {
     if (!data?.data) return;
 
     const mapped: CleanClient[] = data.data.map((client) => ({
-      id: client._id,
-      name: client.fullName,
-      email: client.email,
-      phone: client.phoneNumber ?? "N/A",
-      imageUri: client.picture ?? "",
-      notes: client.notes,
+      id: client?._id,
+      name: client?.fullName,
+      email: client?.email,
+      phone: client?.phoneNumber ?? "N/A",
+      imageUri: client?.picture ?? "",
+      notes: client?.notes,
     }));
 
     setAllClients((prev) => {

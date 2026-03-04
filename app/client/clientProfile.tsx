@@ -9,13 +9,11 @@ import {
 } from "react-native";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import {
-  useGetClientProfile,
-} from "@/services/hooks/home/useGetClientProfileDetails";
+import { useGetClientProfile } from "@/services/hooks/home/useGetClientProfileDetails";
 import CustomHeader from "@/components/shared/CustomHeader";
 import ClientProfileHeaderCard from "@/components/client/ClientProfileHeaderCard";
 import ClientDataTabs from "@/components/client/ClientDataTabs";
-
+import ClientProfileSkeleton from "@/constants/skeletons/ClientProfileSkeleton";
 type RootStackParamList = {
   clientProfile: { id: string };
   editClient: { id: string };
@@ -30,15 +28,9 @@ const ClientProfile: React.FC = () => {
   const router = useRouter();
 
   const { data: client, isLoading, isError } = useGetClientProfile(id);
-
   if (isLoading) {
-    return (
-      <View className="flex-1 bg-[#0F0B18] justify-center items-center">
-        <ActivityIndicator size="large" color="#ffffff" />
-      </View>
-    );
+    return <ClientProfileSkeleton />;
   }
-
   if (isError || !client) {
     return (
       <View className="flex-1 bg-[#0F0B18] justify-center items-center">
