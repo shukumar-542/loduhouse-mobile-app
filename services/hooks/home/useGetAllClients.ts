@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useGetAllClientsQuery } from "@/services/api/clientsApi";
 
 export interface CleanClient {
@@ -13,11 +13,16 @@ export interface CleanClient {
 export const useGetAllClients = () => {
   const [page, setPage] = useState(1);
   const [allClients, setAllClients] = useState<CleanClient[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const { data, isLoading, isFetching, error, refetch } = useGetAllClientsQuery(
     { page, limit: 10 },
+    { refetchOnMountOrArgChange: true },
   );
 
+  const totalPages = data?.meta?.totalPages ?? 1;
+
+  // Map and deduplicate clients
   useEffect(() => {
     if (!data?.data) return;
 
@@ -30,31 +35,38 @@ export const useGetAllClients = () => {
       notes: client.notes,
     }));
 
-    setAllClients((prev) => (page === 1 ? mapped : [...prev, ...mapped]));
-  }, [data]);
+    setAllClients((prev) => {
+      const combined = page === 1 ? mapped : [...prev, ...mapped];
+      // Deduplicate by ID
+      return Array.from(new Map(combined.map((c) => [c.id, c])).values());
+    });
+  }, [data, page]);
 
-  const totalPages = data?.meta?.totalPages ?? 1;
-
+  // Infinite scroll load more
   const loadMore = useCallback(() => {
     if (!isFetching && page < totalPages) {
       setPage((prev) => prev + 1);
     }
   }, [isFetching, page, totalPages]);
 
-  const handleRefresh = useCallback(() => {
-    setPage(1);
-    setAllClients([]);
-    refetch();
+  // Pull-to-refresh
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    setPage(1); // reset to first page
+    setAllClients([]); // clear current list
+    await refetch(); // fetch first page
+    setRefreshing(false);
   }, [refetch]);
 
   return {
     clients: allClients,
     total: data?.meta?.total ?? 0,
-    isLoading: isLoading && page === 1,
+    isLoading: isLoading && page === 1, // skeleton for first page only
     isFetching,
     error,
     loadMore,
-    handleRefresh,
     hasMore: page < totalPages,
+    refreshing,
+    handleRefresh,
   };
 };

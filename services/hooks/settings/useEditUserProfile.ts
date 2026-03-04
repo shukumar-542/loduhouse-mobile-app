@@ -60,7 +60,6 @@ const useEditUserProfile = () => {
           type: fileType,
         };
       }
-console.log(requestData)
       const response = await updateProfile(requestData).unwrap();
 
       // Update SecureStore with the new data (including URL from server)

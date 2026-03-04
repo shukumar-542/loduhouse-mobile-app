@@ -10,6 +10,7 @@ export default function SettingsLayout() {
     >
       <Stack.Screen name="contentPage" />
       <Stack.Screen name="profileSetting" />
+      <Stack.Screen name="changePasswordFromSettings" />
     </Stack>
   );
 }

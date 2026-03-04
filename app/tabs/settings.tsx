@@ -10,8 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useRouter, useFocusEffect } from "expo-router";
-import * as SecureStore from "expo-secure-store";
+import { useFocusEffect, useRouter } from "expo-router";
 import {
   User,
   Crown,
@@ -24,8 +23,10 @@ import {
 } from "lucide-react-native";
 
 import { useGetProfileData } from "@/services/hooks/home/useGetProfileData";
+import useLogout from "@/services/hooks/settings/useLogout";
+import ShowToast from "@/components/shared/ShowToast";
 
-// --- MenuItem Component (unchanged) ---
+// --- MenuItem Component ---
 type MenuItemProps = {
   icon: React.ElementType;
   label: string;
@@ -42,60 +43,61 @@ const MenuItem: React.FC<MenuItemProps> = ({
   badge,
   isLogout,
   labelColor,
-}) => {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.7}
-      style={[styles.menuItem, isLogout && styles.logoutItem]}
-    >
-      <View style={styles.leftSection}>
-        <Icon
-          size={20}
-          color={isLogout ? "#EF4444" : labelColor || "#E5E7EB"}
-          strokeWidth={2}
-        />
-        <Text
-          style={[
-            styles.menuLabel,
-            { color: labelColor || (isLogout ? "#EF4444" : "#E5E7EB") },
-          ]}
-        >
-          {label}
-        </Text>
-      </View>
+}) => (
+  <TouchableOpacity
+    onPress={onPress}
+    activeOpacity={0.7}
+    style={[styles.menuItem, isLogout && styles.logoutItem]}
+  >
+    <View style={styles.leftSection}>
+      <Icon
+        size={20}
+        color={isLogout ? "#EF4444" : labelColor || "#E5E7EB"}
+        strokeWidth={2}
+      />
+      <Text
+        style={[
+          styles.menuLabel,
+          { color: labelColor || (isLogout ? "#EF4444" : "#E5E7EB") },
+        ]}
+      >
+        {label}
+      </Text>
+    </View>
 
-      <View style={styles.rightSection}>
-        {badge && (
-          <View style={styles.badgeContainer}>
-            <Text style={styles.badgeText}>{badge}</Text>
-          </View>
-        )}
-        <ChevronRight size={20} color="#6B7280" />
-      </View>
-    </TouchableOpacity>
-  );
-};
+    <View style={styles.rightSection}>
+      {badge && (
+        <View style={styles.badgeContainer}>
+          <Text style={styles.badgeText}>{badge}</Text>
+        </View>
+      )}
+      <ChevronRight size={20} color="#6B7280" />
+    </View>
+  </TouchableOpacity>
+);
 
 // --- Main Settings Screen ---
 const Settings = () => {
   const router = useRouter();
+
+  // Profile data hook
   const { profileImage, fullName, email, isLoading, refetch } =
     useGetProfileData();
 
-  // Refetch data whenever the screen is focused
+  // Refetch profile data whenever the screen is focused
   useFocusEffect(
     useCallback(() => {
       refetch();
     }, [refetch]),
   );
 
-  const handleLogout = async () => {
-    // Clear user data from secure storage
-    await SecureStore.deleteItemAsync("user_data");
-    // Navigate to login screen
-    router.replace("/auth/login");
-  };
+  // Logout hook
+  const {
+    logout,
+    loading: isLoggingOut,
+    error: logoutError,
+    successMessage,
+  } = useLogout();
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -105,7 +107,7 @@ const Settings = () => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {/* Header Section with dynamic user data */}
+        {/* Header Section */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Profile</Text>
 
@@ -121,6 +123,12 @@ const Settings = () => {
           <Text style={styles.userName}>{fullName || "User"}</Text>
           <Text style={styles.userEmail}>{email || "user@example.com"}</Text>
         </View>
+
+        {/* Toasts */}
+        {logoutError && <ShowToast message={logoutError} type="error" />}
+        {successMessage && (
+          <ShowToast message={successMessage} type="success" />
+        )}
 
         {/* Menu Items */}
         <View style={styles.menuSection}>
@@ -141,7 +149,7 @@ const Settings = () => {
           <MenuItem
             icon={Lock}
             label="Change password"
-            onPress={() => router.push("/auth/changePassword")}
+            onPress={() => router.push("/settings/changePasswordFromSettings")}
           />
 
           <MenuItem
@@ -180,9 +188,9 @@ const Settings = () => {
           <View style={{ marginTop: 20 }}>
             <MenuItem
               icon={LogOut}
-              label="Log Out"
+              label={isLoggingOut ? "Logging Out..." : "Log Out"}
               isLogout
-              onPress={handleLogout}
+              onPress={logout}
             />
           </View>
         </View>
@@ -191,20 +199,11 @@ const Settings = () => {
   );
 };
 
-// --- Styles (unchanged, with added loadingOverlay) ---
+// --- Styles ---
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#0B0812",
-  },
-  scrollContent: {
-    paddingBottom: 100,
-  },
-  header: {
-    alignItems: "center",
-    paddingTop: 20,
-    paddingBottom: 30,
-  },
+  safeArea: { flex: 1, backgroundColor: "#0B0812" },
+  scrollContent: { paddingBottom: 100 },
+  header: { alignItems: "center", paddingTop: 20, paddingBottom: 30 },
   headerTitle: {
     color: "#FFFFFF",
     fontSize: 24,
@@ -219,31 +218,18 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#312E81",
     marginBottom: 15,
-    position: "relative", // for loading overlay
+    position: "relative",
   },
-  avatarImage: {
-    width: "100%",
-    height: "100%",
-  },
+  avatarImage: { width: "100%", height: "100%" },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0,0,0,0.4)",
     justifyContent: "center",
     alignItems: "center",
   },
-  userName: {
-    color: "#FFFFFF",
-    fontSize: 22,
-    fontWeight: "bold",
-  },
-  userEmail: {
-    color: "#9CA3AF",
-    fontSize: 14,
-    marginTop: 4,
-  },
-  menuSection: {
-    paddingHorizontal: 20,
-  },
+  userName: { color: "#FFFFFF", fontSize: 22, fontWeight: "bold" },
+  userEmail: { color: "#9CA3AF", fontSize: 14, marginTop: 4 },
+  menuSection: { paddingHorizontal: 20 },
   menuItem: {
     flexDirection: "row",
     alignItems: "center",
@@ -256,22 +242,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#4F4F59",
   },
-  logoutItem: {
-    marginTop: 10,
-  },
-  leftSection: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  rightSection: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  menuLabel: {
-    fontSize: 16,
-    fontWeight: "500",
-    marginLeft: 12,
-  },
+  logoutItem: { marginTop: 10 },
+  leftSection: { flexDirection: "row", alignItems: "center" },
+  rightSection: { flexDirection: "row", alignItems: "center" },
+  menuLabel: { fontSize: 16, fontWeight: "500", marginLeft: 12 },
   badgeContainer: {
     backgroundColor: "#C9A3671A",
     borderRadius: 8,
@@ -281,11 +255,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: "#C9A367",
   },
-  badgeText: {
-    color: "#C9A367",
-    fontSize: 12,
-    fontWeight: "600",
-  },
+  badgeText: { color: "#C9A367", fontSize: 12, fontWeight: "600" },
 });
 
 export default Settings;

@@ -8,9 +8,10 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 import { colors, gradients } from "@/theme/colors";
+
 const icons: Record<string, string> = {
-  home: "home",
-  clients: "people",
+  home: "people", // was "home", now uses clients/people icon
+  visits: "calendar", // was "people", now uses visits/calendar icon
   analytics: "stats-chart",
   settings: "settings",
 };
@@ -43,7 +44,7 @@ const AnimatedTabItem = ({ route, isFocused, navigation, label }: any) => {
       activeOpacity={0.7}
     >
       <Animated.View style={animatedIconStyle}>
-        <Ionicons name={finalIcon as any} size={22} color={tintColor} />
+        <Ionicons name={finalIcon as any} size={28} color={tintColor} />
       </Animated.View>
       <Text style={{ color: tintColor, fontSize: 10, marginTop: 2 }}>
         {label}
@@ -54,7 +55,7 @@ const AnimatedTabItem = ({ route, isFocused, navigation, label }: any) => {
 
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
   return (
-    <View className="absolute bottom-6 left-5 right-5 flex-row items-center justify-around px-2">
+    <View className="absolute bottom-6 left-5 right-5 flex-row items-center justify-around px-2 py-1">
       {/* Background Layer */}
       <View
         className="absolute inset-0 rounded-3xl"
@@ -103,7 +104,7 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
                     elevation: 0,
                   }}
                 >
-                  <View className="w-9 h-9 rounded-full border-[2px] border-black/80 items-center justify-center">
+                  <View className="w-10 h-10 rounded-full border-[2px] border-black/80 items-center justify-center">
                     <Ionicons name="add" size={26} color="rgba(0,0,0,0.85)" />
                   </View>
                 </TouchableOpacity>
@@ -138,8 +139,8 @@ export default function TabsLayout() {
       }}
       tabBar={(props) => <CustomTabBar {...props} />}
     >
-      <Tabs.Screen name="home" options={{ title: "Home" }} />
-      <Tabs.Screen name="clients" options={{ title: "Clients" }} />
+      <Tabs.Screen name="home" options={{ title: "Clients" }} />
+      <Tabs.Screen name="visits" options={{ title: "Visits" }} />
       <Tabs.Screen name="createClient" options={{ title: "" }} />
       <Tabs.Screen name="analytics" options={{ title: "Analytics" }} />
       <Tabs.Screen name="settings" options={{ title: "Settings" }} />

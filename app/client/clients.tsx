@@ -9,15 +9,13 @@ import {
 import { useRouter } from "expo-router";
 import SvgIcon from "@/components/shared/svgIcon";
 import AppLogo from "@/assets/images/SplashIcon.svg";
-import SearchBox from "@/components/shared/SearchBox";
 import ShowToast from "@/components/shared/ShowToast";
 import UserCard from "@/components/shared/userCard";
 import useGetSearchedClients from "@/services/hooks/home/useGetSearchedClients";
 import { useGetAllClients } from "@/services/hooks/home/useGetAllClients";
 import ClientsSkeleton from "@/constants/skeletons/ClientSkeleton";
-import { useFocusEffect } from "expo-router";
-import { useCallback } from "react";
-const clients = () => {
+
+const ClientsScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const router = useRouter();
 
@@ -27,15 +25,10 @@ const clients = () => {
     isFetching,
     error,
     loadMore,
-    handleRefresh, // already defined in your hook
+    hasMore,
+    refreshing,
+    handleRefresh,
   } = useGetAllClients();
-
-
-  useFocusEffect(
-    useCallback(() => {
-      handleRefresh();
-    }, [handleRefresh]),
-  );
 
   const { successMessage, searchClients } = useGetSearchedClients();
 
@@ -61,24 +54,17 @@ const clients = () => {
           <View className="flex-row justify-between items-center">
             <SvgIcon SvgComponent={AppLogo} />
           </View>
-          <View className="mt-4 mb-4">
-            <SearchBox
-              placeholder="Search clients or Service Types"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-              onSubmitSearch={handleSearchSubmit}
-            />
-          </View>
         </View>
 
         <FlatList
           data={clients}
-          keyExtractor={(item) => item.id}
-          onRefresh={handleRefresh}
-          
-          refreshing={isFetching}
-          onEndReached={loadMore}
+          keyExtractor={(item, index) => item.id ?? index.toString()}
+          onEndReached={() => {
+            if (hasMore) loadMore();
+          }}
           onEndReachedThreshold={0.5}
+          onRefresh={handleRefresh} // pull-to-refresh
+          refreshing={refreshing} // show spinner on pull
           renderItem={({ item }) => (
             <UserCard
               name={item.name}
@@ -92,6 +78,13 @@ const clients = () => {
               }
             />
           )}
+          ListFooterComponent={
+            isFetching && hasMore ? (
+              <View className="py-4">
+                <ActivityIndicator size="small" color="#C9A367" />
+              </View>
+            ) : null
+          }
           contentContainerStyle={{
             paddingHorizontal: 24,
             paddingBottom: 150,
@@ -104,4 +97,4 @@ const clients = () => {
   );
 };
 
-export default clients;
+export default ClientsScreen;

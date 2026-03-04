@@ -33,7 +33,7 @@ export default function ProfileSetting() {
     successMessage,
     saveProfile,
   } = useEditUserProfile();
-console.log(phone)
+
   const [pickerVisible, setPickerVisible] = useState(false);
 
   const handleMediaPicked = (items: MediaItem[]) => {

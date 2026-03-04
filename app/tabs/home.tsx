@@ -72,7 +72,7 @@ const Home = () => {
   );
 
   // Handlers
-  const handleImagePress = () => route.push("/tabs/settings");
+  const handleImagePress = () => route.push("/settings/profileSetting");
   const handleSearchSubmit = () => {
     if (!searchQuery.trim()) return;
     searchClients(searchQuery);
@@ -107,15 +107,15 @@ const Home = () => {
 
           {/* Search & Filter */}
           <View className="mt-4 flex-row items-center">
-            <View className="flex-1 mr-3">
+            <View className="flex-1">
               <SearchBox
-                placeholder="Search clients or Service Types"
+                placeholder="Search clients "
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 onSubmitSearch={handleSearchSubmit}
               />
             </View>
-            <ServiceFilter onSearch={(val) => console.log(val)} />
+  
           </View>
 
           {/* Stats */}
@@ -131,7 +131,7 @@ const Home = () => {
             </Text>
             <TouchableOpacity
               activeOpacity={0.7}
-              onPress={() => route.push("/tabs/clients")}
+              onPress={() => route.push("/client/clients")}
             >
               <Text className="text-[#C9A367] text-sm font-medium">
                 View Dictionary

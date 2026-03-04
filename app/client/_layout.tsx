@@ -4,7 +4,7 @@ export default function ClientLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: "#fff" },
+        contentStyle: { backgroundColor: "#0F0B18" },
         animation: "slide_from_right",
       }}
     >
@@ -12,6 +12,7 @@ export default function ClientLayout() {
       <Stack.Screen name="visitDetails" />
       <Stack.Screen name="editProfile" />
       <Stack.Screen name="addNewVisit" />
+      <Stack.Screen name="clients" />
     </Stack>
   );
 }

@@ -14,7 +14,6 @@ export const useGetProfileData = () => {
     setIsLoading(true);
     try {
       const data = await SecureStore.getItemAsync("user_data");
-      console.log(data)
       if (data) {
         const parsedData = JSON.parse(data);
         const user = parsedData.user || {};
