@@ -3,13 +3,11 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import TimelineTab from "./TimelineTab";
 import MediaTab from "./MediaTab";
 import NotesTab from "./NotesTab";
-import { useEffect } from "react";
 interface ClientDataTabsProps {
   client: any;
 }
 
 const ClientDataTabs: React.FC<ClientDataTabsProps> = ({ client }) => {
-
   const [activeTab, setActiveTab] = useState<"Timeline" | "Media" | "Notes">(
     "Timeline",
   );

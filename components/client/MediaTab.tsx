@@ -23,7 +23,6 @@ interface MediaTabProps {
 const MediaTab: React.FC<MediaTabProps> = ({ media }) => {
   const [playingId, setPlayingId] = useState<string | null>(null); // currently playing video
   const [fullscreenId, setFullscreenId] = useState<string | null>(null);
-
   if (!media?.length) return null;
 
   return (

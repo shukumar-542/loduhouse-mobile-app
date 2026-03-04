@@ -7,12 +7,10 @@ import {
   TouchableOpacity,
   Platform,
 } from "react-native";
-import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
+import { RouteProp, useRoute } from "@react-navigation/native";
 import { useRouter } from "expo-router";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
-  useGetClientProfileDetails,
-  ClientProfileDetails,
+  useGetClientProfile,
 } from "@/services/hooks/home/useGetClientProfileDetails";
 import CustomHeader from "@/components/shared/CustomHeader";
 import ClientProfileHeaderCard from "@/components/client/ClientProfileHeaderCard";
@@ -25,23 +23,26 @@ type RootStackParamList = {
 };
 
 type ClientProfileRouteProp = RouteProp<RootStackParamList, "clientProfile">;
-type NavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  "clientProfile"
->;
 
 const ClientProfile: React.FC = () => {
   const route = useRoute<ClientProfileRouteProp>();
   const { id } = route.params;
   const router = useRouter();
-  const client = useGetClientProfileDetails(id) as
-    | ClientProfileDetails
-    | undefined;
 
-  if (!client) {
+  const { data: client, isLoading, isError } = useGetClientProfile(id);
+
+  if (isLoading) {
     return (
       <View className="flex-1 bg-[#0F0B18] justify-center items-center">
         <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    );
+  }
+
+  if (isError || !client) {
+    return (
+      <View className="flex-1 bg-[#0F0B18] justify-center items-center">
+        <Text className="text-white text-base">Failed to load client.</Text>
       </View>
     );
   }
