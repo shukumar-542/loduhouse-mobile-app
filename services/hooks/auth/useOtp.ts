@@ -84,14 +84,14 @@ const useOtp = () => {
     try {
       setVerifyLoading(true);
       const response = await verifyRegistrationApi({ email, otp }).unwrap();
-      (console.log(response),
+      (
         setVerifySuccess(
           response.data?.message || "Registration OTP verified successfully!",
         ));
       clearVerifySuccess();
       return true;
     } catch (err: any) {
-      console.log(err);
+     
       setVerifyError(
         err?.data?.message ||
           err?.message ||

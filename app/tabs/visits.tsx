@@ -1,65 +1,44 @@
-import { View, ScrollView, KeyboardAvoidingView } from "react-native";
-import React, { useState } from "react";
+import {
+  View,
+  FlatList,
+  KeyboardAvoidingView,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
+import React, { useState, useCallback, memo } from "react";
 import SearchBox from "@/components/shared/SearchBox";
-import AllVisits, { VisitItem } from "@/components/visits/AllVisits";
+import VisitCard from "@/components/visits/VisitCard";
+import { useGetAllVisits } from "@/services/hooks/visits/useGetAllVisits";
+import VisitsSkeleton from "@/constants/skeletons/VisitSkeleton";
+import type { VisitItem } from "@/components/visits/AllVisits";
+import { View as RNView, Text } from "react-native";
 
-const DUMMY_TIMELINE: VisitItem[] = [
-  {
-    id: "1",
-    date: "Mar 01, 2025",
-    name: "Sarah Johnson",
-    items: ["Balayage", "Toner", "Deep Condition"],
-    media: [
-      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400",
-      "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
-    ],
-  },
-  {
-    id: "2",
-    date: "Feb 20, 2025",
-    name: "Emily Carter",
-    items: ["Full Highlights", "Gloss"],
-    media: [
-      "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=400",
-    ],
-  },
-  {
-    id: "3",
-    date: "Feb 10, 2025",
-    name: "Mia Thompson",
-    items: ["Root Touch-Up", "Blow Dry", "Keratin Treatment"],
-    media: [],
-  },
-  {
-    id: "4",
-    date: "Jan 28, 2025",
-    name: "Jessica Lee",
-    items: ["Color Correction", "Trim"],
-    media: [
-      "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400",
-      "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=400",
-      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400",
-      "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400",
-      "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=400",
-    ],
-  },
-  {
-    id: "5",
-    date: "Jan 15, 2025",
-    name: "Olivia Brown",
-    items: ["Ombre", "Toner", "Trim"],
-    media: [],
-  },
-];
+// ─── Memoized row ─────────────────────────────────────────────────
+const VisitRow = memo(({ item }: { item: VisitItem }) => (
+  <VisitCard
+    id={item.id}
+    date={item.date}
+    title={item.name}
+    formula={item.items?.join(" + ") ?? ""}
+    media={item.media?.map((uri) => ({ uri })) ?? []}
+  />
+));
 
 export default function Visits() {
   const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSearchSubmit = () => {
-    console.log("Search submitted:", searchQuery);
-  };
+  const {
+    visits,
+    isLoading,
+    isFetching,
+    hasMore,
+    total,
+    refreshing,
+    loadMore,
+    handleRefresh,
+  } = useGetAllVisits();
 
-  const filteredTimeline = DUMMY_TIMELINE.filter(
+  const filteredTimeline = visits.filter(
     (item) =>
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.items.some((s) =>
@@ -67,42 +46,87 @@ export default function Visits() {
       ),
   );
 
+  const renderItem = useCallback(
+    ({ item }: { item: VisitItem }) => <VisitRow item={item} />,
+    [],
+  );
+
+  const keyExtractor = useCallback((item: VisitItem) => item.id, []);
+
+  if (isLoading) return <VisitsSkeleton />;
+
   return (
     <View style={{ flex: 1, backgroundColor: "#0D0A15" }}>
       <KeyboardAvoidingView
         style={{ flex: 1 }}
-        behavior="padding"
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={0}
       >
-        <ScrollView
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 100 }}
-          keyboardShouldPersistTaps="handled"
+        <FlatList
+          data={filteredTimeline}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
+          onEndReached={() => {
+            if (hasMore) loadMore();
+          }}
+          onEndReachedThreshold={0.5}
+          onRefresh={handleRefresh}
+          refreshing={refreshing}
           showsVerticalScrollIndicator={false}
-        >
-          <View
-            style={{
-              flex: 1,
-              paddingHorizontal: 20,
-              paddingTop: 52,
-              paddingBottom: 32,
-            }}
-          >
-            <View className="mt-4 flex-row items-center">
-              <View className="flex-1">
-                <SearchBox
-                  placeholder="Search visits or services..."
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                  onSubmitSearch={handleSearchSubmit}
-                />
+          keyboardShouldPersistTaps="handled"
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={8}
+          windowSize={10}
+          initialNumToRender={6}
+          contentContainerStyle={{
+            paddingHorizontal: 20,
+            paddingTop: 52,
+            paddingBottom: 150,
+          }}
+          ListHeaderComponent={
+            <View>
+              {/* Search */}
+              <View className="mt-2 flex-row items-center mb-6">
+                <View className="flex-1">
+                  <SearchBox
+                    placeholder="Search visits or services..."
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    onSubmitSearch={() => {}}
+                  />
+                </View>
+              </View>
+              {/* Title + total */}
+              <View className="flex-row justify-between items-center mt-4 mb-3">
+                <Text className="text-white text-lg font-semibold">
+                  All Visits
+                </Text>
+                <View className="bg-[#1E1B2E] border border-[#2E2A45] rounded-full px-3 py-1.5">
+                  <Text className="text-[#C9A367] text-sm font-medium">
+                    {total} total
+                  </Text>
+                </View>
               </View>
             </View>
-
-            <View className="mt-6">
-              <AllVisits timeline={filteredTimeline} />
-            </View>
-          </View>
-        </ScrollView>
+          }
+          ListHeaderComponentStyle={{ marginBottom: 8 }}
+          ListEmptyComponent={
+            !isFetching ? (
+              <RNView style={{ paddingTop: 60, alignItems: "center" }}>
+                <Text style={{ color: "#555", fontSize: 14 }}>
+                  No visits found
+                </Text>
+              </RNView>
+            ) : null
+          }
+          ListFooterComponent={
+            isFetching && hasMore ? (
+              <View style={{ paddingVertical: 16, alignItems: "center" }}>
+                <ActivityIndicator size="small" color="#C9A367" />
+              </View>
+            ) : null
+          }
+        />
       </KeyboardAvoidingView>
     </View>
   );

@@ -7,7 +7,7 @@ import { PaginationDots } from "@/components/onboarding/PaginationDots";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { ONBOARDING_DATA } from "@/constants/onboarding";
 import { router } from "expo-router";
-
+import * as SecureStore from "expo-secure-store";
 const OnboardingScreen: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const totalSteps = ONBOARDING_DATA.length;
@@ -43,13 +43,23 @@ const OnboardingScreen: React.FC = () => {
     ]).start();
   }, [currentStep]);
 
-  const handleNext = (): void => {
-    if (currentStep < totalSteps - 1) {
-      setCurrentStep((prev) => prev + 1);
-    } else {
-      router.push("/auth/login");
-    }
-  };
+const handleNext = async (): Promise<void> => {
+  if (currentStep < totalSteps - 1) {
+    setCurrentStep((prev) => prev + 1);
+  } else {
+    try {
+      const userData = await SecureStore.getItemAsync("user_data");
+      if (userData) {
+        const parsed = JSON.parse(userData);
+        if (parsed?.token) {
+          router.replace("/tabs/home");
+          return;
+        }
+      }
+    } catch {}
+    router.replace("/auth/login");
+  }
+};
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F0B18]">

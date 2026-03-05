@@ -72,8 +72,6 @@ const useCreateNewClient = (): UseCreateNewClientReturn => {
       setIsSubmitting(false);
       return;
     }
-
-    console.log("[useCreateNewClient] Client created successfully:", formData);
     setToastType("success");
     setToastMessage("Client created successfully!");
     setIsSubmitting(false);

@@ -66,7 +66,6 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
                       muted
                       paused={playingId !== item.id}
                       repeat
-                      onError={(e) => console.log("Video error:", e)}
                     />
                     {/* Play overlay */}
                     {playingId !== item.id && (
@@ -115,7 +114,6 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
                 resizeMode="contain"
                 repeat
                 controls
-                onError={(e) => console.log("Fullscreen Video error:", e)}
               />
               <TouchableOpacity
                 className="absolute top-10 right-5 bg-black/50 px-3 py-2 rounded-md"

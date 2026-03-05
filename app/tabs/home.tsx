@@ -9,7 +9,6 @@ import {
   Platform,
   TouchableOpacity,
 } from "react-native";
-
 import { useNavigation, useFocusEffect, useRouter } from "expo-router";
 import SvgIcon from "@/components/shared/svgIcon";
 import AppLogo from "@/assets/images/SplashIcon.svg";
@@ -21,21 +20,19 @@ import ShowToast from "@/components/shared/ShowToast";
 import StatCard from "@/components/shared/StatCard";
 import UserCard from "@/components/shared/userCard";
 import { useGetRecentlyViewed } from "@/services/hooks/home/useGetRecentlyViewed";
-import ServiceFilter from "@/components/home/ServiceFilter";
 import HomeSkeleton from "@/constants/skeletons/HomeSkeleton";
+import HomeListSkeleton from "@/constants/skeletons/HomeListSkeleton";
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigation = useNavigation();
   const route = useRouter();
 
-  // ✅ Alias refetch from profile hook
   const { profileImage, refetch: refetchProfile } = useGetProfileData();
   const ProfileImage = profileImage
     ? Image.resolveAssetSource(profileImage)
     : { uri: undefined };
 
-  // ✅ Alias refetch from recently viewed hook
   const {
     recentlyViewed,
     totalClients,
@@ -46,7 +43,6 @@ const Home = () => {
     refetch: refetchRecentlyViewed,
   } = useGetRecentlyViewed();
 
-  // ✅ Call both refetches on screen focus
   useFocusEffect(
     useCallback(() => {
       refetchProfile();
@@ -56,7 +52,6 @@ const Home = () => {
 
   const { clients, successMessage, searchClients } = useGetSearchedClients();
 
-  // Disable hardware back button
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({
@@ -71,19 +66,17 @@ const Home = () => {
     }, [navigation]),
   );
 
-  // Handlers
   const handleImagePress = () => route.push("/settings/profileSetting");
   const handleSearchSubmit = () => {
     if (!searchQuery.trim()) return;
     searchClients(searchQuery);
   };
 
-  // Loading state
+  // ✅ Full page skeleton only on very first load
   if (isLoading) return <HomeSkeleton />;
 
   return (
     <View className="flex-1 bg-[#0F0B18]">
-      {/* Toast */}
       <ShowToast
         message={error ? "Failed to load home data" : (successMessage ?? "")}
         type={error ? "error" : successMessage ? "success" : "info"}
@@ -93,9 +86,8 @@ const Home = () => {
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        {/* Fixed top section */}
+        {/* Fixed top section — always visible */}
         <View className="px-6 pt-4">
-          {/* Header */}
           <View className="flex-row justify-between items-center">
             <SvgIcon SvgComponent={AppLogo} />
             <ImageNavigator
@@ -105,26 +97,22 @@ const Home = () => {
             />
           </View>
 
-          {/* Search & Filter */}
           <View className="mt-4 flex-row items-center">
             <View className="flex-1">
               <SearchBox
-                placeholder="Search clients "
+                placeholder="Search clients"
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 onSubmitSearch={handleSearchSubmit}
               />
             </View>
-  
           </View>
 
-          {/* Stats */}
           <View className="flex-row justify-between items-center mt-9">
             <StatCard label="Total Clients" value={totalClients} />
             <StatCard label="Recent Visits" value={recentVisits} />
           </View>
 
-          {/* Recently Viewed Header */}
           <View className="flex-row justify-between items-end mt-8 mb-4">
             <Text className="text-white text-xl font-bold">
               Recently Viewed
@@ -140,16 +128,17 @@ const Home = () => {
           </View>
         </View>
 
-        {/* Recently Viewed List */}
-        {recentlyViewed.length > 0 ? (
+        {/* ✅ List section — own skeleton, never full page */}
+        {isFetching ? (
+          <HomeListSkeleton />
+        ) : recentlyViewed.length > 0 ? (
           <FlatList
-            data={recentlyViewed ?? []}
+            data={recentlyViewed}
             keyExtractor={(item, index) =>
               item?.id ? String(item.id) : `recent-${index}`
             }
             renderItem={({ item }) => {
               if (!item) return null;
-
               return (
                 <UserCard
                   name={item.name}
@@ -172,7 +161,18 @@ const Home = () => {
             keyboardShouldPersistTaps="handled"
           />
         ) : (
-          <HomeSkeleton />
+          <View
+            style={{
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              paddingBottom: 100,
+            }}
+          >
+            <Text style={{ color: "#555", fontSize: 14 }}>
+              No recently viewed clients
+            </Text>
+          </View>
         )}
       </KeyboardAvoidingView>
     </View>

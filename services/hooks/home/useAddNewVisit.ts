@@ -98,7 +98,6 @@ const useAddNewVisit = (): UseAddNewVisitReturn => {
       mediaCount: formData.media.length,
     };
 
-    console.log("[useAddNewVisit] Visit submitted successfully:", payload);
     setToastType("success");
     setToastMessage("Visit saved successfully!");
     setIsSubmitting(false);

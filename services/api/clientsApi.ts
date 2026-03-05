@@ -1,7 +1,6 @@
 import { baseApi } from "./baseApi";
 
 // --- Clients List ---
-
 export interface Client {
   _id: string;
   userId: string;
@@ -31,7 +30,6 @@ export interface GetClientsParams {
 }
 
 // --- Client Visits ---
-
 export interface ClientInfo {
   picture: string;
   clientName: string;
@@ -76,8 +74,39 @@ export interface GetClientVisitsParams {
   limit?: number;
 }
 
-// --- API ---
+// --- All Visits ---
+export interface AllVisitEntry {
+  _id: string;
+  clientId: string;
+  clientName: string;
+  serviceType: string;
+  photos?: string[];
+  videos?: string[];
+  date: string;
+}
 
+export interface AllVisitsMeta {
+  page: number;
+  limit: number;
+  totalCount: number;
+  totalPages: number;
+}
+
+export interface AllVisitsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    meta: AllVisitsMeta;
+    visits: AllVisitEntry[];
+  };
+}
+
+export interface GetAllVisitsParams {
+  page?: number;
+  limit?: number;
+}
+
+// --- API ---
 export const clientApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllClients: builder.query<ClientsResponse, GetClientsParams>({
@@ -99,7 +128,17 @@ export const clientApi = baseApi.injectEndpoints({
         ],
       },
     ),
+
+    getAllVisits: builder.query<AllVisitsResponse, GetAllVisitsParams>({
+      query: ({ page = 1, limit = 10 }) =>
+        `/client-visits/all-visits?page=${page}&limit=${limit}`,
+      providesTags: ["Clients"],
+    }),
   }),
 });
 
-export const { useGetAllClientsQuery, useGetClientVisitsQuery } = clientApi;
+export const {
+  useGetAllClientsQuery,
+  useGetClientVisitsQuery,
+  useGetAllVisitsQuery,
+} = clientApi;

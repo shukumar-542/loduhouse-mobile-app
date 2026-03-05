@@ -104,7 +104,6 @@ const VideoCard: React.FC<VideoCardProps> = ({
         muted
         paused={!isPlaying}
         repeat
-        onError={(e) => console.log("Video error:", e)}
       />
       {!isPlaying && (
         <View
@@ -177,7 +176,6 @@ const FullscreenVideo: React.FC<{ uri: string; onClose: () => void }> = ({
           resizeMode="contain"
           repeat
           controls
-          onError={(e) => console.log("Fullscreen Video error:", e)}
         />
         <TouchableOpacity
           style={{

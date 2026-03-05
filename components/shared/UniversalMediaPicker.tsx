@@ -60,7 +60,6 @@ const UniversalMediaPicker: React.FC<UniversalMediaPickerProps> = ({
         onMediaPicked(items);
       }
     } catch (error) {
-      console.log("Photo pick error:", error);
     }
   };
 
@@ -88,7 +87,7 @@ const UniversalMediaPicker: React.FC<UniversalMediaPickerProps> = ({
         onMediaPicked(items);
       }
     } catch (error) {
-      console.log("Video pick error:", error);
+
     }
   };
 

@@ -12,24 +12,10 @@ export interface VisitItem {
 
 interface AllVisitsProps {
   timeline: VisitItem[];
+  total?: number;
 }
 
-const AllVisits: React.FC<AllVisitsProps> = ({ timeline }) => {
-  if (!timeline || timeline.length === 0) {
-    return (
-      <View
-        style={{
-          paddingTop: 60,
-          paddingBottom: 40,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Text style={{ color: "#555", fontSize: 14 }}>No visits found</Text>
-      </View>
-    );
-  }
-
+const AllVisits: React.FC<AllVisitsProps> = ({ timeline, total }) => {
   return (
     <View style={{ paddingBottom: 40 }}>
       {/* Header Row */}
@@ -62,7 +48,7 @@ const AllVisits: React.FC<AllVisitsProps> = ({ timeline }) => {
           }}
         >
           <Text style={{ color: "#C9A367", fontSize: 12, fontWeight: "500" }}>
-            {timeline.length} total
+            {total ?? timeline.length} total
           </Text>
         </View>
       </View>

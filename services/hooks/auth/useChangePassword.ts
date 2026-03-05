@@ -39,7 +39,7 @@ const useChangePassword = (email: string, otp: string) => {
 
       setSuccessMessage(response?.message || "Password changed successfully");
     } catch (err: any) {
-      console.log(err);
+
       setError(
         err?.data?.message || err?.message || "Failed to change password",
       );

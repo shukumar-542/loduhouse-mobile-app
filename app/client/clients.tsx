@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, memo } from "react";
 import {
   View,
   KeyboardAvoidingView,
@@ -15,6 +15,19 @@ import UserCard from "@/components/shared/userCard";
 import useGetSearchedClients from "@/services/hooks/home/useGetSearchedClients";
 import { useGetAllClients } from "@/services/hooks/home/useGetAllClients";
 import ClientsSkeleton from "@/constants/skeletons/ClientSkeleton";
+import type { CleanClient } from "@/services/hooks/home/useGetAllClients";
+
+// ─── Memoized row ─────────────────────────────────────────────────
+const ClientRow = memo(
+  ({ item, onPress }: { item: CleanClient; onPress: (id: string) => void }) => (
+    <UserCard
+      name={item.name}
+      lastService={item.email}
+      imageUri={item.imageUri}
+      onPress={() => onPress(item.id)}
+    />
+  ),
+);
 
 const ClientsScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,6 +52,28 @@ const ClientsScreen = () => {
     searchClients(searchQuery);
   };
 
+  const handlePress = useCallback(
+    (id: string) => {
+      router.push({
+        pathname: "/client/clientProfile",
+        params: { id },
+      });
+    },
+    [router],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: CleanClient }) => (
+      <ClientRow item={item} onPress={handlePress} />
+    ),
+    [handlePress],
+  );
+
+  const keyExtractor = useCallback(
+    (item: CleanClient, index: number) => item.id ?? index.toString(),
+    [],
+  );
+
   if (isLoading) return <ClientsSkeleton />;
 
   return (
@@ -57,37 +92,39 @@ const ClientsScreen = () => {
             <SvgIcon SvgComponent={AppLogo} />
           </View>
         </View>
-        <View className="flex-row justify-between items-center px-6 mt-4 mb-3">
-          <Text className="text-white text-lg font-semibold">All Visits</Text>
 
+        <View className="flex-row justify-between items-center px-6 mt-4 mb-3">
+          <Text className="text-white text-lg font-semibold">All Clients</Text>
           <View className="bg-[#1E1B2E] border border-[#2E2A45] rounded-full px-3 py-1.5">
             <Text className="text-[#C9A367] text-sm font-medium">
               {total} total
             </Text>
           </View>
         </View>
+
         <FlatList
           data={clients}
-          keyExtractor={(item, index) => item.id ?? index.toString()}
+          keyExtractor={keyExtractor}
+          renderItem={renderItem}
           onEndReached={() => {
             if (hasMore) loadMore();
           }}
           onEndReachedThreshold={0.5}
-          onRefresh={handleRefresh} // pull-to-refresh
-          refreshing={refreshing} // show spinner on pull
-          renderItem={({ item }) => (
-            <UserCard
-              name={item.name}
-              lastService={item.email}
-              imageUri={item.imageUri}
-              onPress={() =>
-                router.push({
-                  pathname: "/client/clientProfile",
-                  params: { id: item.id },
-                })
-              }
-            />
-          )}
+          onRefresh={handleRefresh}
+          refreshing={refreshing}
+          removeClippedSubviews={true}
+          maxToRenderPerBatch={8}
+          windowSize={10}
+          initialNumToRender={8}
+          ListEmptyComponent={
+            !isFetching ? (
+              <View style={{ paddingTop: 60, alignItems: "center" }}>
+                <Text style={{ color: "#555", fontSize: 14 }}>
+                  No clients found
+                </Text>
+              </View>
+            ) : null
+          }
           ListFooterComponent={
             isFetching && hasMore ? (
               <View className="py-4">
