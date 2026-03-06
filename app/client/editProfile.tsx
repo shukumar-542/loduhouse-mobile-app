@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   KeyboardAvoidingView,
@@ -12,15 +12,24 @@ import EditProfileHeader from "@/components/shared/EditProfileHeader";
 import EditProfileForm from "@/components/shared/EditProfileForm";
 import DeleteModal from "@/components/shared/DeleteModal";
 import ShowToast from "@/components/shared/ShowToast";
-import { useGetClientInfo } from "@/services/hooks/home/useGetClientInfo";
 import { useClientEditProfile } from "@/services/hooks/home/useClientEditProfile";
 import { useDeleteProfile } from "@/services/hooks/home/useDeleteProfile";
 import { Trash2 } from "lucide-react-native";
 
 const EditProfile = () => {
   const router = useRouter();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const clientInfo = useGetClientInfo(id);
+
+  const { id, fullName, phoneNumber, email, notes, image } =
+    useLocalSearchParams<{
+      id: string;
+      fullName: string;
+      phoneNumber: string;
+      email: string;
+      notes: string;
+      image: string;
+    }>();
+
+  const clientInfo = { fullName, phoneNumber, email, notes, image };
 
   const {
     editProfile,
@@ -28,44 +37,50 @@ const EditProfile = () => {
     error: editError,
     isLoading: isSaving,
   } = useClientEditProfile();
+
   const {
     deleteProfile,
     isLoading: isDeleting,
     error: deleteError,
   } = useDeleteProfile();
+
   const [deleteSuccess, setDeleteSuccess] = useState<string | null>(null);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const saveRef = useRef<() => void>(() => {});
 
-  // Merge errors/messages — show whichever is active
   const toastMessage =
     editError ?? deleteError ?? deleteSuccess ?? successMessage ?? null;
   const toastType =
     editError || deleteError ? "error" : successMessage ? "success" : "info";
 
+ const handleSave = async (updatedData: {
+   fullName: string;
+   phoneNumber: string;
+   email: string;
+   notes: string;
+   image: string;
+ }) => {
+   const result = await editProfile({ id, ...updatedData });
+   if (result.success) {
+     setTimeout(() => {
+       router.back();
+     }, 1500);
+   }
+ };
 
-  const handleSave = async (updatedData: {
-    fullName: string;
-    phoneNumber: string;
-    email: string;
-    notes: string;
-    image: string;
-  }) => {
-    await editProfile({ id, ...updatedData });
-  };
+ const handleDeleteConfirm = async () => {
+   const result = await deleteProfile(id);
+   setIsDeleteModalVisible(false);
 
-  const handleDeleteConfirm = async () => {
-    const result = await deleteProfile(id);
-    setIsDeleteModalVisible(false);
+   if (result.success) {
+     setDeleteSuccess("Client deleted successfully.");
+     setTimeout(() => {
+       router.dismissAll(); 
+       router.replace("/tabs/home"); 
+     }, 1500);
+   }
+ };
 
-    if (result.success) {
-      // Show toast first, then navigate back after a short delay
-      setDeleteSuccess("Client deleted successfully.");
-      setTimeout(() => {
-        router.back();
-      }, 1500); // match this to however long your toast is visible
-    }
-  };
   return (
     <View className="flex-1 bg-[#0F0B18]">
       <KeyboardAvoidingView
@@ -82,24 +97,22 @@ const EditProfile = () => {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          {clientInfo && (
-            <EditProfileForm
-              name={clientInfo.fullName}
-              profileImage={clientInfo.image}
-              phone={clientInfo.phoneNumber}
-              email={clientInfo.email}
-              notes={clientInfo.notes}
-              isLoading={isSaving}
-              onSave={handleSave}
-              registerSave={(fn) => {
-                saveRef.current = fn;
-              }}
-            />
-          )}
+          <EditProfileForm
+            name={clientInfo.fullName}
+            profileImage={clientInfo.image}
+            phone={clientInfo.phoneNumber}
+            email={clientInfo.email}
+            notes={clientInfo.notes}
+            isLoading={isSaving}
+            onSave={handleSave}
+            registerSave={(fn) => {
+              saveRef.current = fn;
+            }}
+          />
         </ScrollView>
 
         {/* Delete Button */}
-        <View className="mb-4 mx-4  pb-5">
+        <View className="mb-4 mx-4 pb-5">
           <TouchableOpacity
             onPress={() => setIsDeleteModalVisible(true)}
             disabled={isDeleting}
@@ -134,7 +147,7 @@ const EditProfile = () => {
         onClose={() => !isDeleting && setIsDeleteModalVisible(false)}
         onConfirm={handleDeleteConfirm}
         title="Delete Client?"
-        description={`Are you sure you want to delete ${clientInfo?.fullName ?? "this client"}? This action cannot be undone.`}
+        description={`Are you sure you want to delete ${fullName ?? "this client"}? This action cannot be undone.`}
         cancelText="Cancel"
         confirmText={isDeleting ? "Deleting..." : "Delete"}
       />

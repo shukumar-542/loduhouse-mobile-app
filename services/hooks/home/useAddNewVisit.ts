@@ -1,5 +1,7 @@
 import { useState, useCallback } from "react";
 import { MediaItem } from "@/components/shared/UniversalMediaPicker";
+import { useAddVisitMutation } from "@/services/api/visitsApi";
+
 // ─── Types ────────────────────────────────────────────────────
 export interface VisitFormData {
   tags: string[];
@@ -12,8 +14,6 @@ export interface VisitFormData {
   tip: string;
 }
 
-// Use a mapped union so setField is assignable across component boundaries
-// without hitting the generic callback variance issue in TypeScript.
 export type SetVisitField = (
   key: keyof VisitFormData,
   value: VisitFormData[keyof VisitFormData],
@@ -22,7 +22,7 @@ export type SetVisitField = (
 export interface UseAddNewVisitReturn {
   formData: VisitFormData;
   setField: SetVisitField;
-  submitVisit: () => void;
+  submitVisit: (clientId: string) => Promise<void>;
   isSubmitting: boolean;
   toastMessage: string | null;
   toastType: "success" | "error" | "warning" | "info";
@@ -49,8 +49,10 @@ const validateFormData = (data: VisitFormData): string | null => {
 
 // ─── Hook ─────────────────────────────────────────────────────
 const useAddNewVisit = (): UseAddNewVisitReturn => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [addVisit, { isLoading: isSubmitting }] = useAddVisitMutation();
+
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  // ✅ Correct
   const [toastType, setToastType] = useState<
     "success" | "error" | "warning" | "info"
   >("info");
@@ -66,7 +68,6 @@ const useAddNewVisit = (): UseAddNewVisitReturn => {
     tip: "",
   });
 
-  // Cast inside the impl so the public signature stays clean
   const setField = useCallback<SetVisitField>((key, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -76,32 +77,62 @@ const useAddNewVisit = (): UseAddNewVisitReturn => {
 
   const clearToast = useCallback(() => setToastMessage(null), []);
 
-  const submitVisit = useCallback(() => {
-    setIsSubmitting(true);
+  const submitVisit = useCallback(
+    async (clientId: string) => {
+      const validationError = validateFormData(formData);
+      if (validationError) {
+        setToastType("error");
+        setToastMessage(validationError);
+        return;
+      }
 
-    const validationError = validateFormData(formData);
+      try {
+        // ✅ "photo" not "image"
+        const photos = formData.media
+          .filter((m) => m.type === "photo")
+          .map((m) => ({
+            uri: m.uri,
+            name: m.uri.split("/").pop() ?? `photo_${Date.now()}.jpg`,
+            type: "image/jpeg",
+          }));
 
-    if (validationError) {
-      console.warn("[useAddNewVisit] Validation failed:", validationError);
-      setToastType("error");
-      setToastMessage(validationError);
-      setIsSubmitting(false);
-      return;
-    }
+        const videos = formData.media
+          .filter((m) => m.type === "video")
+          .map((m) => ({
+            uri: m.uri,
+            name: m.uri.split("/").pop() ?? `video_${Date.now()}.mp4`,
+            type: "video/mp4",
+          }));
 
-    const payload = {
-      ...formData,
-      selectedDate: formData.selectedDate?.toISOString(),
-      servicePrice: parseFloat(formData.servicePrice),
-      tip: formData.tip ? parseFloat(formData.tip) : 0,
-      duration: formData.duration ? parseFloat(formData.duration) : null,
-      mediaCount: formData.media.length,
-    };
+        // ✅ Format date as YYYY-MM-DD
+        const date = formData.selectedDate
+          ? formData.selectedDate.toISOString().split("T")[0]
+          : undefined;
 
-    setToastType("success");
-    setToastMessage("Visit saved successfully!");
-    setIsSubmitting(false);
-  }, [formData]);
+        await addVisit({
+          clientId,
+          serviceType: formData.tags.join(", "),
+          photos: photos.length > 0 ? photos : undefined,
+          videos: videos.length > 0 ? videos : undefined,
+          serviceNotes: formData.serviceNotes || undefined,
+          personalNotes: formData.personalNotes || undefined,
+          duration: formData.duration || undefined,
+          date,
+          servicePrice: formData.servicePrice,
+          tips: formData.tip || undefined,
+        }).unwrap();
+
+        setToastType("success");
+        setToastMessage("Visit saved successfully!");
+      } catch (err: any) {
+        const message =
+          err?.data?.message ?? err?.message ?? "Failed to save visit.";
+        setToastType("error");
+        setToastMessage(message);
+      }
+    },
+    [formData, addVisit],
+  );
 
   return {
     formData,

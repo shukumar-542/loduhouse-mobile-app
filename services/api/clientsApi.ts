@@ -106,6 +106,51 @@ export interface GetAllVisitsParams {
   limit?: number;
 }
 
+// --- Create Client ---
+export interface CreateClientParams {
+  fullName: string;
+  phoneNumber?: string;
+  email: string;
+  notes?: string;
+  picture?: {
+    uri: string;
+    name: string;
+    type: string;
+  };
+}
+
+export interface CreateClientResponse {
+  success: boolean;
+  message: string;
+  data: Client;
+}
+
+// --- Update Client ---
+export interface UpdateClientParams {
+  id: string;
+  fullName?: string;
+  pnoneNumber?: string; // matches backend field name (typo intentional)
+  email?: string;
+  notes?: string;
+  picture?: {
+    uri: string;
+    name: string;
+    type: string;
+  };
+}
+
+export interface UpdateClientResponse {
+  success: boolean;
+  message: string;
+  data: Client;
+}
+
+// --- Delete Client ---
+export interface DeleteClientResponse {
+  success: boolean;
+  message: string;
+}
+
 // --- API ---
 export const clientApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -134,6 +179,73 @@ export const clientApi = baseApi.injectEndpoints({
         `/client-visits/all-visits?page=${page}&limit=${limit}`,
       providesTags: ["Clients"],
     }),
+
+    createClient: builder.mutation<CreateClientResponse, CreateClientParams>({
+      query: ({ picture, ...fields }) => {
+        const formData = new FormData();
+
+        Object.entries(fields).forEach(([key, value]) => {
+          if (value !== undefined) {
+            formData.append(key, value);
+          }
+        });
+
+        if (picture) {
+          formData.append("picture", {
+            uri: picture.uri,
+            name: picture.name,
+            type: picture.type,
+          } as any);
+        }
+
+        return {
+          url: `/clients/`,
+          method: "POST",
+          body: formData,
+          formData: true,
+        };
+      },
+      invalidatesTags: ["Clients"],
+    }),
+
+    updateClient: builder.mutation<UpdateClientResponse, UpdateClientParams>({
+      query: ({ id, picture, ...fields }) => {
+        const formData = new FormData();
+
+        Object.entries(fields).forEach(([key, value]) => {
+          if (value !== undefined) {
+            formData.append(key, value);
+          }
+        });
+
+        if (picture) {
+          formData.append("picture", {
+            uri: picture.uri,
+            name: picture.name,
+            type: picture.type,
+          } as any);
+        }
+
+        return {
+          url: `/clients/${id}`,
+          method: "PATCH",
+          body: formData,
+          formData: true,
+        };
+      },
+      invalidatesTags: (_result, _error, { id }) => [
+        "Clients",
+        { type: "Clients", id },
+      ],
+    }),
+
+    deleteClient: builder.mutation<DeleteClientResponse, string>({
+      query: (id) => ({
+        url: `/clients/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Clients"],
+    }),
   }),
 });
 
@@ -141,4 +253,7 @@ export const {
   useGetAllClientsQuery,
   useGetClientVisitsQuery,
   useGetAllVisitsQuery,
+  useCreateClientMutation,
+  useUpdateClientMutation,
+  useDeleteClientMutation,
 } = clientApi;

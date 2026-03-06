@@ -89,10 +89,10 @@ export default function Visits() {
               <View className="mt-2 flex-row items-center mb-6">
                 <View className="flex-1">
                   <SearchBox
-                    placeholder="Search visits or services..."
+                    placeholder="Search visits by services..."
                     value={searchQuery}
                     onChangeText={setSearchQuery}
-                    onSubmitSearch={() => {}}
+                    mode="visits" // ✅
                   />
                 </View>
               </View>

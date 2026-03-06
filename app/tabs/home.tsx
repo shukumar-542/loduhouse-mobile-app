@@ -14,7 +14,6 @@ import SvgIcon from "@/components/shared/svgIcon";
 import AppLogo from "@/assets/images/SplashIcon.svg";
 import ImageNavigator from "@/components/shared/ImageNavigator";
 import { useGetProfileData } from "@/services/hooks/home/useGetProfileData";
-import useGetSearchedClients from "@/services/hooks/home/useGetSearchedClients";
 import SearchBox from "@/components/shared/SearchBox";
 import ShowToast from "@/components/shared/ShowToast";
 import StatCard from "@/components/shared/StatCard";
@@ -50,8 +49,6 @@ const Home = () => {
     }, [refetchProfile, refetchRecentlyViewed]),
   );
 
-  const { clients, successMessage, searchClients } = useGetSearchedClients();
-
   useFocusEffect(
     useCallback(() => {
       navigation.setOptions({
@@ -67,27 +64,22 @@ const Home = () => {
   );
 
   const handleImagePress = () => route.push("/settings/profileSetting");
-  const handleSearchSubmit = () => {
-    if (!searchQuery.trim()) return;
-    searchClients(searchQuery);
-  };
 
-  // ✅ Full page skeleton only on very first load
   if (isLoading) return <HomeSkeleton />;
 
   return (
     <View className="flex-1 bg-[#0F0B18]">
       <ShowToast
-        message={error ? "Failed to load home data" : (successMessage ?? "")}
-        type={error ? "error" : successMessage ? "success" : "info"}
+        message={error ? "Failed to load home data" : ""}
+        type={error ? "error" : "info"}
       />
 
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        {/* Fixed top section — always visible */}
-        <View className="px-6 pt-4">
+        {/* Fixed top section */}
+        <View className="px-6 pt-4" style={{ zIndex: 999 }}>
           <View className="flex-row justify-between items-center">
             <SvgIcon SvgComponent={AppLogo} />
             <ImageNavigator
@@ -97,15 +89,14 @@ const Home = () => {
             />
           </View>
 
-          <View className="mt-4 flex-row items-center">
-            <View className="flex-1">
-              <SearchBox
-                placeholder="Search clients"
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-                onSubmitSearch={handleSearchSubmit}
-              />
-            </View>
+          {/* ✅ SearchBox with client suggestions */}
+          <View style={{ marginTop: 16, zIndex: 999 }}>
+            <SearchBox
+              placeholder="Search clients"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              mode="clients"
+            />
           </View>
 
           <View className="flex-row justify-between items-center mt-9">
@@ -128,7 +119,7 @@ const Home = () => {
           </View>
         </View>
 
-        {/* ✅ List section — own skeleton, never full page */}
+        {/* List section */}
         {isFetching ? (
           <HomeListSkeleton />
         ) : recentlyViewed.length > 0 ? (

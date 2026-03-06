@@ -9,8 +9,9 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import { Camera, User, Phone, Mail, FileText } from "lucide-react-native";
+import { Camera, User, Mail, FileText } from "lucide-react-native";
 import * as ImagePicker from "expo-image-picker";
+import { MobileNumberInput } from "@/components/shared/PhoneNumberField";
 
 // ─── Types ────────────────────────────────────────────────────
 export interface ClientFormData {
@@ -145,17 +146,12 @@ const CreateNewClientForm: React.FC<CreateNewClientFormProps> = ({
         </Field>
 
         {/* ── Phone Number ── */}
-        <Field label="Phone Number" icon={<Phone size={18} color="#94a3b8" />}>
-          <TextInput
-            className="flex-1 text-white text-sm"
-            placeholder="+1 (555) 000-0000"
-            placeholderTextColor="#3a3a50"
-            value={formData.phoneNumber}
-            onChangeText={(v: string) => setField("phoneNumber", v)}
-            keyboardType="phone-pad"
-            returnKeyType="next"
-          />
-        </Field>
+        <MobileNumberInput
+          label="Phone Number"
+          placeholder="1234567890"
+          value={formData.phoneNumber}
+          onChangeText={(v: string) => setField("phoneNumber", v)}
+        />
 
         {/* ── Email ── */}
         <Field label="Email" icon={<Mail size={18} color="#94a3b8" />}>

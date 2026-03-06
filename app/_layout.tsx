@@ -1,6 +1,6 @@
 import "../global.css";
 import React, { useEffect, useState } from "react";
-import { Stack } from "expo-router";
+import { Stack, router } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import SplashScreen from "@/components/initial/Splashscreen";
 import { AlertNotificationRoot } from "react-native-alert-notification";
@@ -16,10 +16,11 @@ import {
 import { View, Platform } from "react-native";
 import { Provider } from "react-redux";
 import { store } from "@/store";
+import * as SecureStore from "expo-secure-store";
 
 ExpoSplashScreen.preventAutoHideAsync();
 
-export default function RootLayout() {
+function AppContent() {
   const insets = useSafeAreaInsets();
   const [showSplash, setShowSplash] = useState(true);
   const [minTimeElapsed, setMinTimeElapsed] = useState(false);
@@ -48,39 +49,61 @@ export default function RootLayout() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Once splash is done, check token and redirect
+  const handleSplashFinish = async () => {
+    setShowSplash(false);
+    try {
+      const userData = await SecureStore.getItemAsync("user_data");
+      if (userData) {
+        const parsed = JSON.parse(userData);
+        if (parsed?.token) {
+          router.replace("/tabs/home");
+          return;
+        }
+      }
+    } catch {}
+    router.replace("/onboarding");
+  };
+
   if (!fontsLoaded || !minTimeElapsed || showSplash) {
     return (
       <SafeAreaProvider>
         <StatusBar style="light" translucent backgroundColor="transparent" />
-        <SplashScreen onFinish={() => setShowSplash(false)} />
+        <SplashScreen onFinish={handleSplashFinish} />
       </SafeAreaProvider>
     );
   }
 
   return (
+    <View
+      style={{
+        flex: 1,
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        paddingLeft: insets.left,
+        paddingRight: insets.right,
+        backgroundColor: "#0F0B18",
+      }}
+    >
+      <StatusBar style="light" translucent backgroundColor="transparent" />
+      <AlertNotificationRoot theme="dark">
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: "#0F0B18" },
+            animation: "slide_from_right",
+          }}
+        />
+      </AlertNotificationRoot>
+    </View>
+  );
+}
+
+export default function RootLayout() {
+  return (
     <Provider store={store}>
       <SafeAreaProvider>
-        <View
-          style={{
-            flex: 1,
-            paddingTop: insets.top,
-            paddingBottom: insets.bottom,
-            paddingLeft: insets.left,
-            paddingRight: insets.right,
-            backgroundColor: "#0F0B18",
-          }}
-        >
-          <StatusBar style="light" translucent backgroundColor="transparent" />
-          <AlertNotificationRoot theme="dark">
-            <Stack
-              screenOptions={{
-                headerShown: false,
-                contentStyle: { backgroundColor: "#0F0B18" },
-                animation: "slide_from_right",
-              }}
-            />
-          </AlertNotificationRoot>
-        </View>
+        <AppContent />
       </SafeAreaProvider>
     </Provider>
   );

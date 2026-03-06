@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Animated, StatusBar } from "react-native";
+import { View, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import OnboardingIllustration from "@/components/onboarding/OnboardingIllustration";
 import { OnboardingText } from "@/components/onboarding/OnboardingText";
@@ -7,13 +7,12 @@ import { PaginationDots } from "@/components/onboarding/PaginationDots";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { ONBOARDING_DATA } from "@/constants/onboarding";
 import { router } from "expo-router";
-import * as SecureStore from "expo-secure-store";
+
 const OnboardingScreen: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const totalSteps = ONBOARDING_DATA.length;
   const content = ONBOARDING_DATA[currentStep];
 
-  // Animation Values
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(20)).current;
   const scaleAnim = useRef(new Animated.Value(0.95)).current;
@@ -43,28 +42,16 @@ const OnboardingScreen: React.FC = () => {
     ]).start();
   }, [currentStep]);
 
-const handleNext = async (): Promise<void> => {
-  if (currentStep < totalSteps - 1) {
-    setCurrentStep((prev) => prev + 1);
-  } else {
-    try {
-      const userData = await SecureStore.getItemAsync("user_data");
-      if (userData) {
-        const parsed = JSON.parse(userData);
-        if (parsed?.token) {
-          router.replace("/tabs/home");
-          return;
-        }
-      }
-    } catch {}
-    router.replace("/auth/login");
-  }
-};
+  const handleNext = (): void => {
+    if (currentStep < totalSteps - 1) {
+      setCurrentStep((prev) => prev + 1);
+    } else {
+      router.replace("/auth/login");
+    }
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#0F0B18]">
-
-      {/* SECTION 1: Illustration - Centered in the top area */}
       <Animated.View
         style={{
           flex: 3,
@@ -76,7 +63,6 @@ const handleNext = async (): Promise<void> => {
         <OnboardingIllustration imageSrc={content.image} />
       </Animated.View>
 
-      {/* SECTION 2: Content */}
       <Animated.View
         style={{
           flex: 2,

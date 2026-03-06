@@ -1,6 +1,8 @@
 import { useState, useCallback } from "react";
+import { useCreateClientMutation } from "@/services/api/clientsApi";
 
 // ─── Types ────────────────────────────────────────────────────
+
 export interface ClientFormData {
   photo: string | null;
   fullName: string;
@@ -25,6 +27,7 @@ export interface UseCreateNewClientReturn {
 }
 
 // ─── Validation ───────────────────────────────────────────────
+
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const validateFormData = (data: ClientFormData): string | null => {
@@ -36,8 +39,10 @@ const validateFormData = (data: ClientFormData): string | null => {
 };
 
 // ─── Hook ─────────────────────────────────────────────────────
+
 const useCreateNewClient = (): UseCreateNewClientReturn => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createClient, { isLoading }] = useCreateClientMutation();
+
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<
     "success" | "error" | "warning" | "info"
@@ -60,28 +65,52 @@ const useCreateNewClient = (): UseCreateNewClientReturn => {
 
   const clearToast = useCallback(() => setToastMessage(null), []);
 
-  const submitClient = useCallback(() => {
-    setIsSubmitting(true);
-
+  const submitClient = useCallback(async () => {
     const validationError = validateFormData(formData);
-
     if (validationError) {
-      console.warn("[useCreateNewClient] Validation failed:", validationError);
       setToastType("error");
       setToastMessage(validationError);
-      setIsSubmitting(false);
       return;
     }
-    setToastType("success");
-    setToastMessage("Client created successfully!");
-    setIsSubmitting(false);
-  }, [formData]);
+
+    try {
+      const payload: Parameters<typeof createClient>[0] = {
+        fullName: formData.fullName.trim(),
+        phoneNumber: formData.phoneNumber.trim(),
+        email: formData.email.trim(),
+        notes: formData.notes.trim(),
+      };
+
+      if (formData.photo) {
+        const fileName = formData.photo.split("/").pop() ?? "photo.jpg";
+        const fileExt = fileName.split(".").pop()?.toLowerCase() ?? "jpg";
+        const mimeType = fileExt === "png" ? "image/png" : "image/jpeg";
+
+        payload.picture = {
+          uri: formData.photo,
+          name: fileName,
+          type: mimeType,
+        };
+      }
+
+      await createClient(payload).unwrap();
+
+      setToastType("success");
+      setToastMessage("Client created successfully!");
+    } catch (error: any) {
+      console.error("[useCreateNewClient] API error:", error);
+      const message =
+        error?.data?.message ?? "Something went wrong. Please try again.";
+      setToastType("error");
+      setToastMessage(message);
+    }
+  }, [formData, createClient]);
 
   return {
     formData,
     setField,
     submitClient,
-    isSubmitting,
+    isSubmitting: isLoading,
     toastMessage,
     toastType,
     clearToast,

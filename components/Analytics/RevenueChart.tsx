@@ -10,7 +10,6 @@ import {
 } from "react-native";
 import { DayData } from "@/services/hooks/analytics/useAnalytics";
 
-// Colors
 const CARD_BG = "#101012";
 const CARD_BORDER = "#4F4F59";
 const SERVICE_COLOR = "#C9A367";
@@ -22,7 +21,9 @@ const TOOLTIP_BG = "#101012";
 
 const BAR_MAX_HEIGHT = 150;
 const BAR_WIDTH = 48;
-const TOOLTIP_OFFSET = 50; // Increased offset to ensure tooltip visibility
+const BAR_MARGIN = 2;
+const PADDING_HORIZONTAL = 32;
+const TOOLTIP_OFFSET = 50;
 
 type Props = {
   chartData: DayData[];
@@ -34,10 +35,7 @@ type Props = {
   onMonthChange: (m: string) => void;
 };
 
-// Clean month string: extract only the month name (e.g., "Jun 05" → "Jun")
-const cleanMonthString = (month: string): string => {
-  return month.split(" ")[0];
-};
+const cleanMonthString = (month: string): string => month.split(" ")[0];
 
 const Dropdown = ({
   value,
@@ -151,17 +149,61 @@ const RevenueChart = ({
 }: Props) => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
+  const hasScrolled = useRef(false);
+  const hasAutoSelected = useRef(false); // ✅ track auto-selection separately
+
+  const today = new Date().getDate();
+  const todayIndex = chartData.findIndex((d) => d.day === `Day-${today}`);
+
+  // ✅ Auto-select today once chartData is populated
+  useEffect(() => {
+    if (chartData.length === 0) return;
+    if (hasAutoSelected.current) return;
+
+    const idx = chartData.findIndex((d) => d.day === `Day-${today}`);
+    if (idx !== -1) {
+      setSelectedIndex(idx);
+      hasAutoSelected.current = true;
+    }
+  }, [chartData]);
+
+  // ✅ Reset everything when month/year changes
+  useEffect(() => {
+    hasScrolled.current = false;
+    hasAutoSelected.current = false;
+    setSelectedIndex(null);
+  }, [selectedYear, selectedMonth]);
 
   const maxValue = Math.max(...chartData.map((d) => d.service + d.tips), 1);
 
-  // Scroll to the end (last items) when data changes
-  useEffect(() => {
-    if (scrollViewRef.current && chartData.length > 0) {
-      setTimeout(() => {
-        scrollViewRef.current?.scrollToEnd({ animated: false });
-      }, 100);
-    }
-  }, [chartData]);
+  const scrollToToday = () => {
+    if (!scrollViewRef.current || chartData.length === 0) return;
+    if (hasScrolled.current) return;
+
+    const targetIndex = todayIndex !== -1 ? todayIndex : chartData.length - 1;
+    const barSlotWidth = BAR_WIDTH + BAR_MARGIN * 2;
+    const scrollX = Math.max(
+      0,
+      PADDING_HORIZONTAL + targetIndex * barSlotWidth - 160,
+    );
+
+    scrollViewRef.current.scrollTo({ x: scrollX, animated: false });
+    hasScrolled.current = true;
+  };
+
+  const handleMonthChange = (m: string) => {
+    hasScrolled.current = false;
+    hasAutoSelected.current = false;
+    setSelectedIndex(null);
+    onMonthChange(m);
+  };
+
+  const handleYearChange = (y: string) => {
+    hasScrolled.current = false;
+    hasAutoSelected.current = false;
+    setSelectedIndex(null);
+    onYearChange(y);
+  };
 
   return (
     <View
@@ -171,7 +213,7 @@ const RevenueChart = ({
         borderWidth: 1,
         borderColor: CARD_BORDER,
         padding: 16,
-        overflow: "visible", // Crucial for Android to allow tooltip overflow
+        overflow: "visible",
       }}
     >
       {/* Header */}
@@ -197,7 +239,7 @@ const RevenueChart = ({
           <Dropdown
             value={selectedYear}
             options={years}
-            onSelect={onYearChange}
+            onSelect={handleYearChange}
           />
           <Dropdown
             value={cleanMonthString(selectedMonth)}
@@ -206,7 +248,7 @@ const RevenueChart = ({
               const original =
                 months.find((m) => cleanMonthString(m) === displayValue) ||
                 displayValue;
-              onMonthChange(original);
+              handleMonthChange(original);
             }}
           />
         </View>
@@ -242,14 +284,12 @@ const RevenueChart = ({
         ref={scrollViewRef}
         horizontal
         showsHorizontalScrollIndicator={false}
-        style={{
-          height: BAR_MAX_HEIGHT + 80, 
-          overflow: "hidden",
-        }}
+        onContentSizeChange={scrollToToday}
+        style={{ height: BAR_MAX_HEIGHT + 80, overflow: "hidden" }}
         contentContainerStyle={{
           alignItems: "flex-end",
-          paddingHorizontal: 32, 
-          paddingRight: 48, 
+          paddingHorizontal: PADDING_HORIZONTAL,
+          paddingRight: 48,
           paddingTop: 40,
         }}
       >
@@ -259,6 +299,7 @@ const RevenueChart = ({
           const tipsH = (item.tips / total) * totalH || 0;
           const serviceH = totalH - tipsH;
           const isSelected = selectedIndex === index;
+          const isToday = index === todayIndex;
 
           return (
             <Pressable
@@ -267,16 +308,32 @@ const RevenueChart = ({
               style={{
                 alignItems: "center",
                 width: BAR_WIDTH,
-                marginHorizontal: 2,
+                marginHorizontal: BAR_MARGIN,
               }}
             >
+              {/* Today dot */}
+              {isToday && (
+                <View
+                  style={{
+                    position: "absolute",
+                    bottom: -14,
+                    width: 6,
+                    height: 6,
+                    borderRadius: 3,
+                    backgroundColor: SERVICE_COLOR,
+                  }}
+                />
+              )}
+
+              {/* Tooltip */}
               {isSelected && (
                 <View
                   style={{
                     position: "absolute",
-                    bottom: BAR_MAX_HEIGHT - totalH + TOOLTIP_OFFSET,
+                    bottom: BAR_MAX_HEIGHT - totalH + TOOLTIP_OFFSET-40,
                     backgroundColor: TOOLTIP_BG,
                     borderRadius: 10,
+          
                     paddingHorizontal: 10,
                     paddingVertical: 8,
                     zIndex: 10,
@@ -321,12 +378,15 @@ const RevenueChart = ({
                 </View>
               )}
 
+              {/* Bar */}
               <View
                 style={{
                   width: 26,
-                  height: totalH,
+                  height: Math.max(totalH, 4),
                   borderRadius: 6,
                   overflow: "hidden",
+                  borderWidth: isToday ? 1.5 : 0,
+                  borderColor: isToday ? SERVICE_COLOR : "transparent",
                 }}
               >
                 <View
@@ -345,15 +405,20 @@ const RevenueChart = ({
                 />
               </View>
 
+              {/* Label */}
               <Text
                 style={{
-                  color: isSelected ? "#FFFFFF" : LABEL_COLOR,
+                  color: isToday
+                    ? SERVICE_COLOR
+                    : isSelected
+                      ? "#FFFFFF"
+                      : LABEL_COLOR,
                   fontSize: 11,
                   marginTop: 7,
-                  fontWeight: isSelected ? "500" : "400",
+                  fontWeight: isToday || isSelected ? "700" : "400",
                 }}
               >
-                {item.day}
+                {item.day.replace("Day-", "")}
               </Text>
             </Pressable>
           );

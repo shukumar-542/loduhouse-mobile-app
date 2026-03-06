@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useUpdateClientMutation } from "@/services/api/clientsApi";
 
 export interface ClientEditProfilePayload {
   id: string;
@@ -12,23 +13,56 @@ export interface ClientEditProfilePayload {
 export const useClientEditProfile = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  const editProfile = async (payload: ClientEditProfilePayload) => {
-    setIsLoading(true);
+  const [updateClient, { isLoading }] = useUpdateClientMutation();
+
+  const editProfile = async (
+    payload: ClientEditProfilePayload,
+  ): Promise<{ success: boolean }> => {
     setError(null);
     setSuccessMessage(null);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const isLocalFile = payload.image && !payload.image.startsWith("http");
+
+      await updateClient({
+        id: payload.id,
+        fullName: payload.fullName,
+        pnoneNumber: payload.phoneNumber,
+        email: payload.email,
+        notes: payload.notes,
+        ...(isLocalFile && {
+          picture: {
+            uri: payload.image,
+            name: `profile_${payload.id}.jpg`,
+            type: "image/jpeg",
+          },
+        }),
+      }).unwrap();
 
       setSuccessMessage("Client updated successfully.");
+      return { success: true };
     } catch (err: any) {
-      setError(err?.message ?? "Something went wrong. Please try again.");
-    } finally {
-      setIsLoading(false);
+      const message =
+        err?.data?.message ??
+        err?.message ??
+        "Something went wrong. Please try again.";
+      setError(message);
+      return { success: false };
     }
   };
 
-  return { editProfile, successMessage, error, isLoading };
+  return {
+    editProfile,
+    successMessage,
+    error,
+    isLoading,
+  } as {
+    editProfile: (
+      payload: ClientEditProfilePayload,
+    ) => Promise<{ success: boolean }>;
+    successMessage: string | null;
+    error: string | null;
+    isLoading: boolean;
+  };
 };

@@ -1,12 +1,12 @@
 import React from "react";
-import { View, Text, Image, ImageSourcePropType } from "react-native";
+import { View, Text, Image } from "react-native";
 
 interface ClientProfileHeaderCardProps {
   name: string;
   clientSince: string | number;
   visitCount: number;
   note: string;
-  imageSource: ImageSourcePropType;
+  imageUri?: string;
   containerClassName?: string;
 }
 
@@ -15,13 +15,19 @@ const ClientProfileHeaderCard: React.FC<ClientProfileHeaderCardProps> = ({
   clientSince,
   visitCount,
   note,
-  imageSource,
+  imageUri,
   containerClassName,
 }) => {
   return (
     <View className={`bg-transparent p-4 w-full ${containerClassName}`}>
       <View className="flex-row items-center mb-5">
-        <Image source={imageSource} className="w-20 h-20 rounded-full mr-4" />
+        <Image
+          source={
+            imageUri ? { uri: imageUri } : require("@/assets/images/Avater.png")
+          }
+          className="w-20 h-20 rounded-full mr-4"
+          resizeMode="cover"
+        />
         <View className="flex-1 justify-center">
           <Text className="text-2xl font-bold text-white mb-1">{name}</Text>
           <Text className="text-base text-gray-400">

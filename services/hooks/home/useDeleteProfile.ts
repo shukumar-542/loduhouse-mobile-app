@@ -1,27 +1,22 @@
-import { useState } from "react";
+import { useDeleteClientMutation } from "@/services/api/clientsApi";
 
 export const useDeleteProfile = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [deleteClient, { isLoading, error }] = useDeleteClientMutation();
 
-  const deleteProfile = async (id: string) => {
-    setIsLoading(true);
-    setError(null);
-
+  const deleteProfile = async (id: string): Promise<{ success: boolean }> => {
     try {
-      // 🔁 Replace with your real API call e.g. await api.delete(`/clients/${id}`)
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-
+      await deleteClient(id).unwrap();
       return { success: true };
     } catch (err: any) {
-      const message =
-        err?.message ?? "Failed to delete client. Please try again.";
-      setError(message);
       return { success: false };
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  return { deleteProfile, isLoading, error };
+  return {
+    deleteProfile,
+    isLoading,
+    error: error
+      ? ((error as any)?.data?.message ?? "Failed to delete client.")
+      : null,
+  };
 };

@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Image, ActivityIndicator } from "react-native";
-import { User, Phone, Mail } from "lucide-react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Image,
+  ActivityIndicator,
+  TouchableOpacity,
+} from "react-native";
+import { User, Phone, Mail, Camera } from "lucide-react-native";
+import * as ImagePicker from "expo-image-picker";
 
 interface EditProfileFormProps {
   name?: string;
@@ -33,6 +41,23 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
   const [phoneNumber, setPhoneNumber] = useState(phone);
   const [emailVal, setEmailVal] = useState(email);
   const [notesVal, setNotesVal] = useState(notes);
+  const [imageUri, setImageUri] = useState(profileImage);
+
+  const handlePickImage = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) return;
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]?.uri) {
+      setImageUri(result.assets[0].uri);
+    }
+  };
 
   const handleSave = () => {
     onSave?.({
@@ -40,31 +65,50 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({
       phoneNumber,
       email: emailVal,
       notes: notesVal,
-      image: profileImage,
+      image: imageUri,
     });
   };
 
   useEffect(() => {
     registerSave?.(handleSave);
-  }, [fullName, phoneNumber, emailVal, notesVal]);
+  }, [fullName, phoneNumber, emailVal, notesVal, imageUri]);
 
   return (
-    <View className="w-full  px-6 pt-10 pb-6">
+    <View className="w-full px-6 pt-10 pb-6">
       {/* Profile Image */}
       <View className="items-center mb-8">
-        <View className="w-24 h-24 rounded-full border-2 border-zinc-800 overflow-hidden bg-zinc-900">
-          {isLoading ? (
-            <View className="w-full h-full items-center justify-center bg-zinc-900">
-              <ActivityIndicator size="small" color="#C9A367" />
-            </View>
-          ) : (
-            <Image
-              source={{ uri: profileImage }}
-              className="w-full h-full"
-              resizeMode="cover"
-            />
-          )}
-        </View>
+        <TouchableOpacity
+          onPress={handlePickImage}
+          disabled={isLoading}
+          activeOpacity={0.8}
+          className="relative"
+        >
+          <View className="w-24 h-24 rounded-full border-2 border-zinc-800 overflow-hidden bg-zinc-900">
+            {isLoading ? (
+              <View className="w-full h-full items-center justify-center bg-zinc-900">
+                <ActivityIndicator size="small" color="#C9A367" />
+              </View>
+            ) : (
+              <Image
+                source={
+                  imageUri
+                    ? { uri: imageUri }
+                    : require("@/assets/images/Avater.png")
+                }
+                className="w-full h-full"
+                resizeMode="cover"
+              />
+            )}
+          </View>
+
+          {/* Camera badge */}
+          <View
+            className="absolute bottom-0 right-0 rounded-full p-1.5"
+            style={{ backgroundColor: "#C9A367" }}
+          >
+            <Camera size={14} color="#0F0B18" />
+          </View>
+        </TouchableOpacity>
       </View>
 
       {/* Form Fields */}

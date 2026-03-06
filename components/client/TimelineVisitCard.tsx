@@ -25,7 +25,6 @@ const TimelineVisitCard: React.FC<TimelineVisitProps> = ({
   media,
 }) => {
   const router = useRouter();
-
   const handleNavigate = () => {
     router.push(
       `/client/visitDetails?id=${id}&date=${encodeURIComponent(date)}`,

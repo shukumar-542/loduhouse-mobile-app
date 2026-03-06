@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Modal,
   Dimensions,
+  ActivityIndicator,
 } from "react-native";
 import {
   Ionicons,
@@ -14,19 +15,44 @@ import {
   MaterialCommunityIcons,
 } from "@expo/vector-icons";
 import Video from "react-native-video";
-import {
-  useGetServiceDetails,
-  ServiceDetails as ServiceDetailsType,
-} from "@/services/hooks/home/useGetServiceDetails";
+import { useGetServiceDetails } from "@/services/hooks/home/useGetServiceDetails";
 
 interface Props {
   id: string;
 }
 
 const ServiceDetails: React.FC<Props> = ({ id }) => {
-  const service = useGetServiceDetails(id) as ServiceDetailsType;
-  const [playingId, setPlayingId] = useState<string | null>(null);
+  const { service, total, isLoading, isError } = useGetServiceDetails(id);
+  const [playingUri, setPlayingUri] = useState<string | null>(null);
   const [fullscreenUri, setFullscreenUri] = useState<string | null>(null);
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-[#0F0B18]">
+        <ActivityIndicator size="large" color="#C9A367" />
+      </View>
+    );
+  }
+
+  if (isError || !service) {
+    return (
+      <View className="flex-1 items-center justify-center bg-[#0F0B18]">
+        <Text className="text-white">Failed to load visit details.</Text>
+      </View>
+    );
+  }
+
+  // ✅ serviceType from API is a string like "Haircut, Fade" — split into array
+  const serviceTypes = service.serviceType
+    .split(",")
+    .map((s: string) => s.trim())
+    .filter(Boolean);
+
+  // ✅ Combine photos and videos into unified media list
+  const allMedia = [
+    ...(service.photos ?? []).map((uri: string) => ({ uri, type: "image" })),
+    ...(service.videos ?? []).map((uri: string) => ({ uri, type: "video" })),
+  ];
 
   return (
     <>
@@ -36,13 +62,13 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
         showsVerticalScrollIndicator={false}
       >
         {/* Top Images/Media */}
-        {service.media.length > 0 && (
+        {allMedia.length > 0 && (
           <View className="flex-row justify-between mb-6">
-            {service.media.slice(0, 2).map((item) => (
+            {allMedia.slice(0, 2).map((item, index) => (
               <View
-                key={item.id}
+                key={index}
                 className={`${
-                  service.media.length === 1 ? "w-full" : "w-[48%]"
+                  allMedia.length === 1 ? "w-full" : "w-[48%]"
                 } h-36 rounded-xl overflow-hidden border border-[#2D2C35] relative`}
               >
                 {item.type === "image" ? (
@@ -56,7 +82,7 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
                     activeOpacity={0.9}
                     className="w-full h-full"
                     onPress={() =>
-                      setPlayingId(playingId === item.id ? null : item.id)
+                      setPlayingUri(playingUri === item.uri ? null : item.uri)
                     }
                   >
                     <Video
@@ -64,11 +90,10 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
                       style={{ width: "100%", height: "100%" }}
                       resizeMode="cover"
                       muted
-                      paused={playingId !== item.id}
+                      paused={playingUri !== item.uri}
                       repeat
                     />
-                    {/* Play overlay */}
-                    {playingId !== item.id && (
+                    {playingUri !== item.uri && (
                       <View className="absolute inset-0 bg-black/40 justify-center items-center">
                         <View className="w-10 h-10 bg-white rounded-full justify-center items-center">
                           <View
@@ -87,7 +112,6 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
                         </View>
                       </View>
                     )}
-                    {/* Fullscreen button */}
                     <TouchableOpacity
                       className="absolute bottom-2 right-2 bg-black/50 px-2 py-1 rounded"
                       onPress={() => setFullscreenUri(item.uri)}
@@ -125,7 +149,7 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
           </Modal>
         )}
 
-        {/* Service Type Section */}
+        {/* Service Type */}
         <View className="mb-6">
           <View className="flex-row items-center mb-3">
             <MaterialCommunityIcons
@@ -138,7 +162,7 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
             </Text>
           </View>
           <View className="flex-row flex-wrap gap-y-2">
-            {service.serviceType.map((type, index) => (
+            {serviceTypes.map((type: string, index: number) => (
               <View
                 key={index}
                 className="bg-[#3D3528] px-5 py-2 rounded-full mr-3 border border-[#5C4E38]"
@@ -159,7 +183,7 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
           </View>
           <View className="bg-[#101012] p-4 rounded-xl border border-[#4F4F59] min-h-[55px] justify-center">
             <Text className="text-white text-[15px]">
-              {service.serviceNotes}
+              {service.serviceNotes || "—"}
             </Text>
           </View>
         </View>
@@ -172,7 +196,7 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
           </View>
           <View className="bg-[#101012] p-4 rounded-xl border border-[#4F4F59] min-h-[55px] justify-center">
             <Text className="text-white text-[15px]">
-              {service.personalNotes}
+              {service.personalNotes || "—"}
             </Text>
           </View>
         </View>
@@ -185,7 +209,7 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
           </View>
           <View className="bg-[#101012] p-4 rounded-xl border border-[#4F4F59] min-h-[55px] justify-center">
             <Text className="text-gray-400 text-[15px]">
-              {service.duration}
+              {service.duration ? `${service.duration} min` : "—"}
             </Text>
           </View>
         </View>
@@ -203,7 +227,7 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
           <View className="w-[47%]">
             <Text className="text-gray-500 text-base mb-2">Tip</Text>
             <View className="bg-[#101012] p-4 rounded-xl border border-[#4F4F59] min-h-[55px] justify-center">
-              <Text className="text-gray-400 text-[15px]">${service.tip}</Text>
+              <Text className="text-gray-400 text-[15px]">${service.tips}</Text>
             </View>
           </View>
         </View>
@@ -212,7 +236,7 @@ const ServiceDetails: React.FC<Props> = ({ id }) => {
       {/* Static Footer */}
       <View className="absolute bottom-0 left-0 right-0 flex-row justify-between items-center px-6 py-8 bg-[#0F0E17] border-t border-[#4F4F59]">
         <Text className="text-gray-600 text-xl">Total</Text>
-        <Text className="text-white text-2xl font-bold">${service.total}</Text>
+        <Text className="text-white text-2xl font-bold">${total}</Text>
       </View>
     </>
   );

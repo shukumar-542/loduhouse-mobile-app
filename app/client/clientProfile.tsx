@@ -14,6 +14,7 @@ import CustomHeader from "@/components/shared/CustomHeader";
 import ClientProfileHeaderCard from "@/components/client/ClientProfileHeaderCard";
 import ClientDataTabs from "@/components/client/ClientDataTabs";
 import ClientProfileSkeleton from "@/constants/skeletons/ClientProfileSkeleton";
+
 type RootStackParamList = {
   clientProfile: { id: string };
   editClient: { id: string };
@@ -28,6 +29,7 @@ const ClientProfile: React.FC = () => {
   const router = useRouter();
 
   const { data: client, isLoading, isError } = useGetClientProfile(id);
+
   if (isLoading) {
     return <ClientProfileSkeleton />;
   }
@@ -40,13 +42,23 @@ const ClientProfile: React.FC = () => {
   }
 
   const handleAddNewVisit = () => {
-    router.push("/client/addNewVisit");
+    router.push({
+      pathname: "/client/addNewVisit",
+      params: { clientId: id },
+    });
   };
 
   const handleEditClient = () => {
     router.push({
       pathname: "/client/editProfile",
-      params: { id },
+      params: {
+        id,
+        fullName: client.name,
+        phoneNumber: client.notes.phoneNumber,
+        email: client.notes.email,
+        notes: client.preferences,
+        image: client.image,
+      },
     });
   };
 
@@ -65,7 +77,7 @@ const ClientProfile: React.FC = () => {
           clientSince={client.clientSince}
           visitCount={client.visits}
           note={client.preferences}
-          imageSource={{ uri: client.image }}
+          imageUri={client.image}
           containerClassName="px-4"
         />
 
