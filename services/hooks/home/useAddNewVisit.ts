@@ -52,7 +52,6 @@ const useAddNewVisit = (): UseAddNewVisitReturn => {
   const [addVisit, { isLoading: isSubmitting }] = useAddVisitMutation();
 
   const [toastMessage, setToastMessage] = useState<string | null>(null);
-  // ✅ Correct
   const [toastType, setToastType] = useState<
     "success" | "error" | "warning" | "info"
   >("info");
@@ -87,7 +86,6 @@ const useAddNewVisit = (): UseAddNewVisitReturn => {
       }
 
       try {
-        // ✅ "photo" not "image"
         const photos = formData.media
           .filter((m) => m.type === "photo")
           .map((m) => ({
@@ -104,9 +102,10 @@ const useAddNewVisit = (): UseAddNewVisitReturn => {
             type: "video/mp4",
           }));
 
-        // ✅ Format date as YYYY-MM-DD
+        // Strictly format as YYYY-MM-DD regardless of whether selectedDate
+        // is a Date object or an ISO string (e.g. "2026-03-19T18:00:00.000Z")
         const date = formData.selectedDate
-          ? formData.selectedDate.toISOString().split("T")[0]
+          ? new Date(formData.selectedDate).toLocaleDateString("en-CA") // en-CA = YYYY-MM-DD
           : undefined;
 
         await addVisit({

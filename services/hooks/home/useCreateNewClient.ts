@@ -98,7 +98,6 @@ const useCreateNewClient = (): UseCreateNewClientReturn => {
       setToastType("success");
       setToastMessage("Client created successfully!");
     } catch (error: any) {
-      console.error("[useCreateNewClient] API error:", error);
       const message =
         error?.data?.message ?? "Something went wrong. Please try again.";
       setToastType("error");

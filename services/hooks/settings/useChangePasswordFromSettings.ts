@@ -52,8 +52,6 @@ const useChangePasswordFromSettings = () => {
       setNewPassword("");
       setConfirmPassword("");
     } catch (err: any) {
-      console.error(err);
-
       setError(
         err?.data?.message || err?.message || "Failed to change password",
       );

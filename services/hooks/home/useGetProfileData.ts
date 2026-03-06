@@ -31,7 +31,7 @@ export const useGetProfileData = () => {
         setEmail("");
       }
     } catch (err) {
-      console.error("Error fetching user data:", err);
+
     } finally {
       setIsLoading(false);
     }

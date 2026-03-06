@@ -32,7 +32,6 @@ const useEditUserProfile = () => {
           setAvatarUri(user.profilePicture || null);
         }
       } catch (err) {
-        console.error("Failed to load user data for editing", err);
       }
     };
     loadUserData();
