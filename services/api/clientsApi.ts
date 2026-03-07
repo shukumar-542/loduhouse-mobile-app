@@ -10,6 +10,7 @@ export interface Client {
   notes: string;
   picture?: string;
   createdAt: string;
+  last:string
 }
 
 export interface ClientsResponse {

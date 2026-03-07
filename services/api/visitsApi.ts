@@ -20,6 +20,13 @@ export interface AddVisitResponse {
   data: any;
 }
 
+// --- Get Service Types ---
+export interface GetServiceTypesResponse {
+  success: boolean;
+  message: string;
+  data: string[];
+}
+
 // --- Get Visit Details ---
 export interface VisitDetail {
   _id: string;
@@ -108,6 +115,13 @@ export const visitsApi = baseApi.injectEndpoints({
       ],
     }),
 
+    getServiceTypes: builder.query<GetServiceTypesResponse, void>({
+      query: () => ({
+        url: "/client-visits/service-types",
+        method: "GET",
+      }),
+    }),
+
     getVisitDetails: builder.query<GetVisitDetailsResponse, string>({
       query: (id) => ({
         url: `/client-visits/${id}`,
@@ -118,4 +132,8 @@ export const visitsApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useAddVisitMutation, useGetVisitDetailsQuery } = visitsApi;
+export const {
+  useAddVisitMutation,
+  useGetServiceTypesQuery,
+  useGetVisitDetailsQuery,
+} = visitsApi;

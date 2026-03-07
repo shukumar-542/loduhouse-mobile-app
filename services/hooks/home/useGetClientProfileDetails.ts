@@ -96,7 +96,6 @@ export const useGetClientProfile = (
   isError: boolean;
 } => {
   const { data, isLoading, isError } = useGetClientVisitsQuery({ clientId });
-
   return {
     data: data?.data
       ? mapApiToClientProfile(

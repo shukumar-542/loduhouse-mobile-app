@@ -124,6 +124,7 @@ const useAddNewVisit = (): UseAddNewVisitReturn => {
         setToastType("success");
         setToastMessage("Visit saved successfully!");
       } catch (err: any) {
+   
         const message =
           err?.data?.message ?? err?.message ?? "Failed to save visit.";
         setToastType("error");

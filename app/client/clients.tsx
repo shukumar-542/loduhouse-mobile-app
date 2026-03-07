@@ -21,7 +21,7 @@ const ClientRow = memo(
   ({ item, onPress }: { item: CleanClient; onPress: (id: string) => void }) => (
     <UserCard
       name={item.name}
-      lastService={item.email}
+      lastService={item.last}
       imageUri={item.imageUri}
       onPress={() => onPress(item.id)}
     />
@@ -54,13 +54,12 @@ const ClientsScreen = () => {
     [router],
   );
 
-  const renderItem = useCallback(
-    ({ item }: { item: CleanClient }) => (
-      <ClientRow item={item} onPress={handlePress} />
-    ),
-    [handlePress],
-  );
-
+const renderItem = useCallback(
+  ({ item }: { item: CleanClient }) => {
+    return <ClientRow item={item} onPress={handlePress} />;
+  },
+  [handlePress],
+);
   const keyExtractor = useCallback(
     (item: CleanClient, index: number) => item.id ?? index.toString(),
     [],

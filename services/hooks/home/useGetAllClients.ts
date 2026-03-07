@@ -8,6 +8,7 @@ export interface CleanClient {
   phone: string;
   imageUri: string;
   notes: string;
+  last: string;
 }
 
 export const useGetAllClients = () => {
@@ -32,6 +33,7 @@ export const useGetAllClients = () => {
       phone: client?.phoneNumber ?? "N/A",
       imageUri: client?.picture ?? "",
       notes: client?.notes,
+      last:client?.last,
     }));
 
     setAllClients((prev) => {

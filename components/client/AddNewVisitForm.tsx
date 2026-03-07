@@ -7,6 +7,7 @@ import {
   Alert,
   Image as RNImage,
   Modal,
+  ActivityIndicator,
 } from "react-native";
 import {
   Tag,
@@ -25,16 +26,12 @@ import {
 import UniversalMediaPicker, {
   MediaItem,
 } from "../shared/UniversalMediaPicker";
-import { VisitFormData,SetVisitField } from "@/services/hooks/home/useAddNewVisit";
+import {
+  VisitFormData,
+  SetVisitField,
+} from "@/services/hooks/home/useAddNewVisit";
+import { useGetServiceTypes } from "@/services/hooks/visits/useGetServicesTypes";
 
-const PRESET_TAGS = [
-  "Haircut",
-  "Beard Trim",
-  "Color",
-  "Fade",
-  "Shave",
-  "Treatment",
-];
 const DAYS_OF_WEEK = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
 const MONTHS = [
   "January",
@@ -153,7 +150,6 @@ const InlineCalendar: React.FC<InlineCalendarProps> = ({
         padding: 16,
       }}
     >
-      {/* Header */}
       <View
         style={{
           flexDirection: "row",
@@ -190,8 +186,6 @@ const InlineCalendar: React.FC<InlineCalendarProps> = ({
           <ChevronRight size={16} color="#94a3b8" />
         </TouchableOpacity>
       </View>
-
-      {/* Day-of-week labels */}
       <View style={{ flexDirection: "row", marginBottom: 8 }}>
         {DAYS_OF_WEEK.map((d) => (
           <View key={d} style={{ flex: 1, alignItems: "center" }}>
@@ -201,8 +195,6 @@ const InlineCalendar: React.FC<InlineCalendarProps> = ({
           </View>
         ))}
       </View>
-
-      {/* Grid */}
       {rows.map((row, rowIdx) => (
         <View key={rowIdx} style={{ flexDirection: "row", marginBottom: 4 }}>
           {row.map((cell, cellIdx) => {
@@ -243,8 +235,6 @@ const InlineCalendar: React.FC<InlineCalendarProps> = ({
           })}
         </View>
       ))}
-
-      {/* Selected date label */}
       {selectedDate && (
         <View
           style={{
@@ -288,7 +278,9 @@ const AddNewVisitForm: React.FC<AddNewVisitFormProps> = ({
   const [tagModalVisible, setTagModalVisible] = useState(false);
   const [newTagInput, setNewTagInput] = useState("");
 
-  // ─── Tags ────────────────────────────────────────────────────
+  const { serviceTypes, isLoading: serviceTypesLoading } = useGetServiceTypes();
+
+  // ─── Tags ─────────────────────────────────────────────────────
   const toggleTag = (tag: string) => {
     const updated = formData.tags.includes(tag)
       ? formData.tags.filter((t: string) => t !== tag)
@@ -299,7 +291,7 @@ const AddNewVisitForm: React.FC<AddNewVisitFormProps> = ({
   const addCustomTag = () => {
     const trimmed = newTagInput.trim();
     if (!trimmed) return;
-    if ([...PRESET_TAGS, ...customTags].includes(trimmed)) {
+    if ([...serviceTypes, ...customTags].includes(trimmed)) {
       Alert.alert("Tag already exists", `"${trimmed}" is already in the list.`);
       return;
     }
@@ -317,7 +309,7 @@ const AddNewVisitForm: React.FC<AddNewVisitFormProps> = ({
     );
   };
 
-  // ─── Media ───────────────────────────────────────────────────
+  // ─── Media ────────────────────────────────────────────────────
   const handleMediaPicked = (newItems: MediaItem[]) => {
     const existingUris = new Set(formData.media.map((m: MediaItem) => m.uri));
     const fresh = newItems.filter(
@@ -333,46 +325,54 @@ const AddNewVisitForm: React.FC<AddNewVisitFormProps> = ({
     );
   };
 
-  const allTags = [...PRESET_TAGS, ...customTags];
+  const allTags = [...serviceTypes, ...customTags];
 
   return (
     <View className="flex-1 bg-[#0F0D17] px-5">
       {/* ── Service Type ── */}
       <SectionHeader icon={Tag} title="Service Type" />
-      <View className="flex-row flex-wrap gap-2">
-        {allTags.map((tag) => {
-          const isSelected = formData.tags.includes(tag);
-          const isCustom = customTags.includes(tag);
-          return (
-            <View key={tag} className="flex-row items-center">
-              <TouchableOpacity
-                onPress={() => toggleTag(tag)}
-                className={`flex-row items-center px-4 py-2 rounded-full border ${isSelected ? "bg-[#C9A367] border-[#C9A367]" : "bg-[#101012] border-[#4F4F59]"}`}
-              >
-                {isSelected && (
-                  <Check size={13} color="#fff" style={{ marginRight: 5 }} />
-                )}
-                <Text className="text-white">{tag}</Text>
-              </TouchableOpacity>
-              {isCustom && (
+      {serviceTypesLoading ? (
+        <ActivityIndicator
+          size="small"
+          color="#C9A367"
+          style={{ alignSelf: "flex-start", marginVertical: 8 }}
+        />
+      ) : (
+        <View className="flex-row flex-wrap gap-2">
+          {allTags.map((tag) => {
+            const isSelected = formData.tags.includes(tag);
+            const isCustom = customTags.includes(tag);
+            return (
+              <View key={tag} className="flex-row items-center">
                 <TouchableOpacity
-                  onPress={() => removeCustomTag(tag)}
-                  className="ml-1 bg-[#2a2a35] rounded-full p-1"
+                  onPress={() => toggleTag(tag)}
+                  className={`flex-row items-center px-4 py-2 rounded-full border ${isSelected ? "bg-[#C9A367] border-[#C9A367]" : "bg-[#101012] border-[#4F4F59]"}`}
                 >
-                  <X size={11} color="#94a3b8" />
+                  {isSelected && (
+                    <Check size={13} color="#fff" style={{ marginRight: 5 }} />
+                  )}
+                  <Text className="text-white">{tag}</Text>
                 </TouchableOpacity>
-              )}
-            </View>
-          );
-        })}
-        <TouchableOpacity
-          onPress={() => setTagModalVisible(true)}
-          className="flex-row items-center border border-dashed border-[#4F4F59] px-4 py-2 rounded-full"
-        >
-          <Plus size={14} color="#94a3b8" />
-          <Text className="text-slate-500 ml-1">Custom Tag</Text>
-        </TouchableOpacity>
-      </View>
+                {isCustom && (
+                  <TouchableOpacity
+                    onPress={() => removeCustomTag(tag)}
+                    className="ml-1 bg-[#2a2a35] rounded-full p-1"
+                  >
+                    <X size={11} color="#94a3b8" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            );
+          })}
+          <TouchableOpacity
+            onPress={() => setTagModalVisible(true)}
+            className="flex-row items-center border border-dashed border-[#4F4F59] px-4 py-2 rounded-full"
+          >
+            <Plus size={14} color="#94a3b8" />
+            <Text className="text-slate-500 ml-1">Custom Tag</Text>
+          </TouchableOpacity>
+        </View>
+      )}
 
       {/* ── Media ── */}
       <SectionHeader icon={Image} title="Media" />

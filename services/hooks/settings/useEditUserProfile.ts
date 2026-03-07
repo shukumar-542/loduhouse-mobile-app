@@ -17,7 +17,6 @@ const useEditUserProfile = () => {
 
   const [updateProfile] = useUpdateProfileMutation();
 
-  // Load existing user data from SecureStore on mount
   useEffect(() => {
     const loadUserData = async () => {
       try {
