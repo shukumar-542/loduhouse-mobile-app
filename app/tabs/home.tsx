@@ -113,7 +113,7 @@ const Home = () => {
               onPress={() => route.push("/client/clients")}
             >
               <Text className="text-[#C9A367] text-sm font-medium">
-                View Dictionary
+                See All Clients
               </Text>
             </TouchableOpacity>
           </View>

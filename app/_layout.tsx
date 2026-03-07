@@ -62,7 +62,6 @@ function AppContent() {
         }
       }
     } catch {}
-    router.replace("/onboarding");
   };
 
   if (!fontsLoaded || !minTimeElapsed || showSplash) {
