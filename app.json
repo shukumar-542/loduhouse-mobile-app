@@ -1,19 +1,19 @@
 {
   "expo": {
-    "name": "Recall Pro",
-    "slug": "recall-pro",
+    "name": "Loude House",
+    "slug": "LoudeHouse",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "recallpro",
+    "scheme": "loudehouse",
     "userInterfaceStyle": "automatic",
-    "icon": "./assets/images/AppIcon.png",
+    "icon": "./assets/images/appIco.png",
     "statusBar": {
       "barStyle": "dark-content",
       "backgroundColor": "transparent",
       "translucent": true
     },
     "splash": {
-      "image": "./assets/images/AppIcon.png",
+      "image": "./assets/images/appIco.png",
       "resizeMode": "contain",
       "backgroundColor": "#0F0B18"
     },
@@ -24,7 +24,7 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.ayonghosh.recallpro",
+      "package": "com.shukumar.loudehouse",
       "adaptiveIcon": {
         "backgroundColor": "#0F0B18"
       },

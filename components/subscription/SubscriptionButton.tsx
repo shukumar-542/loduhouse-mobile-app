@@ -1,7 +1,8 @@
 import React from "react";
 import { Pressable, Text, ViewStyle } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
+import { LinearGradient } from "expo-linear-gradient";
 import { ShoppingCart } from "lucide-react-native";
+
 interface SubscriptionButtonProps {
   label: string;
   onPress: () => void;
@@ -13,8 +14,8 @@ export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
   onPress,
   disabled = false,
 }) => {
-  const gradientColors = disabled
-    ? ["#E5E5E5", "#E5E5E5"] // solid gray when disabled
+  const gradientColors: readonly [string, string] = disabled
+    ? ["#E5E5E5", "#E5E5E5"]
     : ["#C9A367", "rgba(208,170,105,0.7)"];
 
   return (
@@ -23,9 +24,7 @@ export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
       disabled={disabled}
       className="w-full rounded-2xl overflow-hidden my-2"
       style={({ pressed }) => [
-        {
-          opacity: pressed && !disabled ? 0.8 : 1,
-        } as ViewStyle,
+        { opacity: pressed && !disabled ? 0.8 : 1 } as ViewStyle,
       ]}
     >
       <LinearGradient
@@ -55,4 +54,5 @@ export const SubscriptionButton: React.FC<SubscriptionButtonProps> = ({
     </Pressable>
   );
 };
+
 export default SubscriptionButton;

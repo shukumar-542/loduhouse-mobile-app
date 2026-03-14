@@ -12,8 +12,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { Animated, StyleSheet, ViewStyle } from "react-native";
-import { LinearGradient } from "expo-linear-gradient"; // or: react-native-linear-gradient
-
+import { LinearGradient } from "expo-linear-gradient"; 
 interface SkeletonProps {
   width?: number | `${number}%`;
   height?: number;

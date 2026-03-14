@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { View, StyleSheet, Animated, Dimensions, Text } from "react-native";
-import SplashIcon from "@/assets/images/SplashIcon.svg";
+import { Image } from "react-native";
+import SplashIcon from "@/assets/images/appIco.png";
 
 const { width } = Dimensions.get("window");
 
@@ -62,8 +63,10 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
           },
         ]}
       >
-        <SplashIcon width={width * 0.7} height={100} />
-        <Text style={styles.tagline}>Professional memory, simplified</Text>
+        <Image
+          source={SplashIcon}
+          style={{ width: width * 0.7, height: 100, resizeMode: "contain" }}
+        />
       </Animated.View>
     </View>
   );

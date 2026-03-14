@@ -1,6 +1,6 @@
 import React from "react";
-import { Pressable, Text, ViewStyle } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
+import { Pressable, Text, ViewStyle, ColorValue } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface ButtonProps {
   label: string;
@@ -13,19 +13,17 @@ export const Button: React.FC<ButtonProps> = ({
   onPress,
   disabled = false,
 }) => {
-  const gradientColors = disabled
-    ? ["#E5E5E5", "#E5E5E5"] // solid gray when disabled
+  // TypeScript-safe color tuple
+  const gradientColors: readonly [ColorValue, ColorValue] = disabled
+    ? ["#E5E5E5", "#E5E5E5"]
     : ["#C9A367", "rgba(208,170,105,0.7)"];
 
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}
       disabled={disabled}
-      className="w-full rounded-2xl overflow-hidden"
       style={({ pressed }) => [
-        {
-          opacity: pressed && !disabled ? 0.8 : 1,
-        } as ViewStyle,
+        { opacity: pressed && !disabled ? 0.8 : 1 } as ViewStyle,
       ]}
     >
       <LinearGradient
@@ -36,12 +34,15 @@ export const Button: React.FC<ButtonProps> = ({
           paddingVertical: 16,
           alignItems: "center",
           justifyContent: "center",
+          borderRadius: 12,
         }}
       >
         <Text
-          className={`text-base font-semibold ${
-            disabled ? "text-gray-500" : "text-white"
-          }`}
+          style={{
+            color: disabled ? "#A3A3A3" : "#FFFFFF",
+            fontWeight: "bold",
+            fontSize: 18,
+          }}
         >
           {label}
         </Text>
