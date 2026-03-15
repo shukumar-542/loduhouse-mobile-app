@@ -120,7 +120,7 @@ const GoogleAuthWebView: React.FC<GoogleAuthWebViewProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0F0918",
+    backgroundColor: "#F1F1F2",
   },
   header: {
     flexDirection: "row",
@@ -129,11 +129,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "#2a2a3a",
+    borderBottomColor: "#172434",
     position: "relative",
   },
   headerTitle: {
-    color: "#ffffff",
+    color: "#F1F1F2",
     fontSize: 16,
     fontWeight: "600",
   },
@@ -144,19 +144,19 @@ const styles = StyleSheet.create({
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#0F0918",
+    backgroundColor: "#172434",
     alignItems: "center",
     justifyContent: "center",
     zIndex: 10,
   },
   loadingText: {
-    color: "#9ca3af",
+    color: "#172434",
     marginTop: 12,
     fontSize: 14,
   },
   webview: {
     flex: 1,
-    backgroundColor: "#0F0918",
+    backgroundColor: "#172434",
   },
 });
 

@@ -15,8 +15,8 @@ export const Button: React.FC<ButtonProps> = ({
 }) => {
   // TypeScript-safe color tuple
   const gradientColors: readonly [ColorValue, ColorValue] = disabled
-    ? ["#E5E5E5", "#E5E5E5"]
-    : ["#C9A367", "rgba(208,170,105,0.7)"];
+    ? ["#5B2EFF", "#E5E5E5"]
+    : ["#5B2EFF", "#5B2EFF"];
 
   return (
     <Pressable

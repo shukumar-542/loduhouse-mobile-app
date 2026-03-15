@@ -15,7 +15,7 @@ export const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   return (
     <TouchableOpacity onPress={onPress} activeOpacity={0.85}>
       <LinearGradient
-        colors={["#C9A367", "rgba(208,170,105,0.7)"]}
+        colors={["#5B2EFF", "#5B2EFF"]}
         start={{ x: 0.5, y: 0 }}
         end={{ x: 0.5, y: 1 }}
         style={{

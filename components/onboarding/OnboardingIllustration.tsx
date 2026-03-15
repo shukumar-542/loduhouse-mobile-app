@@ -18,7 +18,6 @@ const OnboardingIllustration: React.FC<IllustrationProps> = ({
       <View
         style={{
           width: width * 0.85,
-          // Set a max height so it doesn't bleed into the status bar/text
           height: height * 0.45,
         }}
         className="items-center justify-center"

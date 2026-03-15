@@ -7,8 +7,9 @@ import {
   ScrollView,
   Dimensions,
   BackHandler,
+  Image,
 } from "react-native";
-import LoginLogo from "@/assets/images/SplashIcon.svg";
+import LoginLogo from "@/assets/images/Logo.png";
 import SvgIcon from "@/components/shared/svgIcon";
 import AuthText from "@/components/auth/AuthText";
 import { EmailInput } from "@/components/shared/EmailField";
@@ -86,13 +87,13 @@ const Login = () => {
           showsVerticalScrollIndicator={false}
         >
           <View className="flex-1 px-6 pt-8 pb-6 justify-center">
-            <View className="items-center mb-4">
-              <SvgIcon SvgComponent={LoginLogo} width={width * 0.5} />
+            <View className="items-center mb-4 px-5">
+              <Image source={LoginLogo} style={{ width: "100%", height: 100 }} />
             </View>
 
             <AuthText
-              title="Let's start!"
-              description="Sign in to manage your clients"
+              title="Log In"
+              description="Welcome Back"
             />
 
             <ShowToast

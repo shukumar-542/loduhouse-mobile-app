@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Animated } from "react-native";
+import { View, Animated, Image, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import OnboardingIllustration from "@/components/onboarding/OnboardingIllustration";
 import { OnboardingText } from "@/components/onboarding/OnboardingText";
@@ -7,6 +7,8 @@ import { PaginationDots } from "@/components/onboarding/PaginationDots";
 import { PrimaryButton } from "@/components/shared/PrimaryButton";
 import { ONBOARDING_DATA } from "@/constants/onboarding";
 import { router } from "expo-router";
+import onboarding1 from "@/assets/images/Loog.png"
+
 
 const OnboardingScreen: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -60,7 +62,20 @@ const OnboardingScreen: React.FC = () => {
         }}
         className="items-center justify-end w-full pb-4"
       >
-        <OnboardingIllustration imageSrc={content.image} />
+        {/* <OnboardingIllustration imageSrc={onboarding1} /> */}
+          <Image
+            source={onboarding1}
+            style={{
+              width: "80%",
+              // height: "30%",
+            }}
+            resizeMode="contain"
+          />
+
+        <View className="items-center px-8">
+          <Text className="text-white text-2xl font-semibold text-center ">Premium Studio Management</Text>
+
+        </View>
       </Animated.View>
 
       <Animated.View
@@ -71,19 +86,19 @@ const OnboardingScreen: React.FC = () => {
         }}
         className="px-8 justify-between pb-12"
       >
-        <View className="items-center">
+        {/* <View className="items-center">
           <OnboardingText
             title={content.title}
             description={content.description}
           />
-        </View>
+        </View> */}
 
         <View className="w-full gap-y-8">
-          <View className="py-4">
+          {/* <View className="py-4">
             <PaginationDots total={totalSteps} activeIndex={currentStep} />
-          </View>
+          </View> */}
           <PrimaryButton
-            label={currentStep === totalSteps - 1 ? "Get Started" : "Next"}
+            label={"Get Started"}
             onPress={handleNext}
           />
         </View>

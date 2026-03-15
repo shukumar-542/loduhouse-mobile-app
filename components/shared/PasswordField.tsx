@@ -24,7 +24,7 @@ const PasswordInput: React.FC<PasswordProps> = ({
       <View
         className={`${
           isFocused ? "bg-[#121217]" : ""
-        } border border-[#C9A367] rounded-xl flex-row items-center px-4`}
+        } border border-[#F1F1F2] rounded-xl flex-row items-center px-4`}
       >
         <TextInput
           placeholder={placeholder}
