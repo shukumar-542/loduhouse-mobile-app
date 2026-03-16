@@ -34,7 +34,7 @@ export const TextField: React.FC<InputProps> = ({
     <View className="mb-5 w-full">
       <Text className="text-white text-base font-bold mb-2 ml-1">{label}</Text>
       <View
-        className={`border border-[#C9A367] rounded-xl px-4 ${containerBgClass}`}
+        className={`border border-[#F1F1F2] rounded-xl px-4 ${containerBgClass}`}
       >
         <TextInput
           placeholder={placeholder}

@@ -12,8 +12,8 @@ import { COUNTRY_CODES } from "@/constants/PhoneNumberDatabase";
 interface InputProps {
   label: string;
   placeholder: string;
-  value: string; // full phone number (e.g., "+8801712345678")
-  onChangeText: (text: string) => void; // returns full number
+  value: string; 
+  onChangeText: (text: string) => void;
 }
 
 export const MobileNumberInput: React.FC<InputProps> = ({
@@ -23,7 +23,7 @@ export const MobileNumberInput: React.FC<InputProps> = ({
   onChangeText,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
-  const [selectedCode, setSelectedCode] = useState(COUNTRY_CODES[17]); // Bangladesh default
+  const [selectedCode, setSelectedCode] = useState(COUNTRY_CODES[17]); 
   const [localNumber, setLocalNumber] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,12 +72,12 @@ export const MobileNumberInput: React.FC<InputProps> = ({
       <View
         className={`${
           isFocused ? "bg-[#121217]" : ""
-        } border border-[#C9A367] rounded-xl px-4 py-2 flex-row items-center`}
+        } border border-[#F1F1F2] rounded-xl px-4 py-2 flex-row items-center`}
       >
         {/* Country Code Selector */}
         <TouchableOpacity
           onPress={() => setModalVisible(true)}
-          className="flex-row items-center mr-2 pr-2 border-r border-[#C9A367]"
+          className="flex-row items-center mr-2 pr-2 border-r border-[#F1F1F2]"
         >
           <Text className="text-base mr-1">{selectedCode.flag}</Text>
           <Text className="text-white text-base font-medium">

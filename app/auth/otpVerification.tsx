@@ -48,7 +48,8 @@ const OtpVerification = () => {
   };
 
   const handleVerifyOtp = async () => {
-    await verifyRegistrationOtp(); // <-- call registration OTP verification
+    // await verifyRegistrationOtp(); // <-- call registration OTP verification
+    router.push("/auth/chooseRole");
   };
 
   return (

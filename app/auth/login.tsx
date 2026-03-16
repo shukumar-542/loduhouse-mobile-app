@@ -66,11 +66,15 @@ const Login = () => {
     }, [navigation]),
   );
 
-  useEffect(() => {
-    if (successMessage && !error) {
-      router.replace("/subscription/subscriptions");
-    }
-  }, [successMessage, error, router]);
+  // useEffect(() => {
+  //   if (successMessage && !error) {
+  //     router.replace("/auth/chooseRole");
+  //   }
+  // }, [successMessage, error, router]);
+
+  const handleRole = () => {
+    router.push("/auth/chooseRole");
+  }
 
   const displayError = error || googleError;
 
@@ -147,7 +151,7 @@ const Login = () => {
 
               <Button
                 label={loading ? "Logging in..." : "Login"}
-                onPress={login}
+                onPress={handleRole}
                 disabled={loading || googleLoading}
               />
             </View>

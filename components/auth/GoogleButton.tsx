@@ -27,8 +27,8 @@ export const GoogleButton: React.FC<SocialButtonProps> = ({
     onPress={onPress}
     disabled={disabled}
     activeOpacity={0.7}
-    className={`flex-row items-center justify-center w-full py-4 rounded-xl border border-[#4F4F59] ${
-      disabled ? "bg-[#2a2214] opacity-60" : "bg-[#463823]"
+    className={`flex-row items-center justify-center w-full py-4 rounded-3xl border border-[#4F4F59] ${
+      disabled ? "bg-[#2a2214] opacity-60" : "bg-[#172434]"
     }`}
   >
     <View className="flex items-center justify-center mr-3">

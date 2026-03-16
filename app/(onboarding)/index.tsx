@@ -45,11 +45,11 @@ const OnboardingScreen: React.FC = () => {
   }, [currentStep]);
 
   const handleNext = (): void => {
-    if (currentStep < totalSteps - 1) {
-      setCurrentStep((prev) => prev + 1);
-    } else {
+    // if (currentStep < totalSteps - 1) {
+    //   setCurrentStep((prev) => prev + 1);
+    // } else {
       router.replace("/auth/login");
-    }
+    // }
   };
 
   return (

@@ -52,15 +52,16 @@ const Register = () => {
   const router = useRouter();
 
   const handleRegister = async () => {
-    const success = await register();
-    if (success) {
-      setTimeout(() => {
-        router.push({
-          pathname: "/auth/otpVerification",
-          params: { email },
-        });
-      }, 500);
-    }
+    // const success = await register();
+    // if (success) {
+    //   setTimeout(() => {
+    //     router.push({
+    //       pathname: "/auth/otpVerification",
+    //       params: { email },
+    //     });
+    //   }, 500);
+    // }
+    router.push("/auth/otpVerification");
   };
 
   const displayError = error || googleError;

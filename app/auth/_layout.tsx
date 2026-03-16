@@ -14,6 +14,7 @@ export default function AuthLayout() {
       <Stack.Screen name="emailConfirmation" />
       <Stack.Screen name="passwordOtpVerification" />
       <Stack.Screen name="changePassword" />
+      <Stack.Screen name="chooseRole" />
     </Stack>
   );
 }
