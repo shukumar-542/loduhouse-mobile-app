@@ -12,7 +12,7 @@ const Analytics = () => {
   const getCurrentMonth = () => {
     const now = new Date();
     const month = now.toLocaleString("default", { month: "short" }); // "Jun"
-    const day = "01"; // Always first day of month
+    const day = "01"; 
     return `${month} ${day}`;
   };
 

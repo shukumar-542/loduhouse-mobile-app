@@ -10,8 +10,8 @@ import Animated, {
 import { colors, gradients } from "@/theme/colors";
 
 const icons: Record<string, string> = {
-  home: "people", // was "home", now uses clients/people icon
-  visits: "calendar", // was "people", now uses visits/calendar icon
+  home: "people",
+  visits: "calendar", 
   analytics: "stats-chart",
   settings: "settings",
 };
@@ -55,7 +55,7 @@ const AnimatedTabItem = ({ route, isFocused, navigation, label }: any) => {
 
 const CustomTabBar = ({ state, descriptors, navigation }: any) => {
   return (
-    <View className="absolute bottom-6 left-5 right-5 flex-row items-center justify-around px-2 py-1">
+    <View className="absolute bottom-6 left-5 right-5  flex-row items-center justify-around px-2 py-3">
       {/* Background Layer */}
       <View
         className="absolute inset-0 rounded-3xl"
@@ -76,42 +76,42 @@ const CustomTabBar = ({ state, descriptors, navigation }: any) => {
         const label = options.title || route.name;
 
         // --- Center Floating Button ---
-        if (route.name === "createClient") {
-          return (
-            <View
-              key={route.key}
-              className="relative items-center justify-center z-10"
-            >
-              <View
-                className="w-[65px] h-[65px] bg-[#080808] rounded-full items-center justify-center -top-10"
-                style={{
-                  shadowColor: "#C9A367",
-                  shadowOffset: { width: 10, height: 8 },
-                  shadowOpacity: 0.4,
-                  shadowRadius: 16,
-                  elevation: 6,
-                }}
-              >
-                <TouchableOpacity
-                  onPress={() => navigation.navigate(route.name)}
-                  activeOpacity={0.9}
-                  className="w-[50px] h-[50px] bg-[#C9A367] rounded-full items-center justify-center"
-                  style={{
-                    shadowColor: gradients.primary[0],
-                    shadowOffset: { width: 0, height: 1 },
-                    shadowOpacity: 0.5,
-                    shadowRadius: 12,
-                    elevation: 0,
-                  }}
-                >
-                  <View className="w-10 h-10 rounded-full border-[2px] border-black/80 items-center justify-center">
-                    <Ionicons name="add" size={26} color="rgba(0,0,0,0.85)" />
-                  </View>
-                </TouchableOpacity>
-              </View>
-            </View>
-          );
-        }
+        // if (route.name === "createClient") {
+        //   return (
+        //     <View
+        //       key={route.key}
+        //       className="relative items-center justify-center z-10"
+        //     >
+        //       <View
+        //         className="w-[65px] h-[65px] bg-[#080808] rounded-full items-center justify-center -top-10"
+        //         style={{
+        //           shadowColor: "#C9A367",
+        //           shadowOffset: { width: 10, height: 8 },
+        //           shadowOpacity: 0.4,
+        //           shadowRadius: 16,
+        //           elevation: 6,
+        //         }}
+        //       >
+        //         <TouchableOpacity
+        //           onPress={() => navigation.navigate(route.name)}
+        //           activeOpacity={0.9}
+        //           className="w-[50px] h-[50px] bg-[#C9A367] rounded-full items-center justify-center"
+        //           style={{
+        //             shadowColor: gradients.primary[0],
+        //             shadowOffset: { width: 0, height: 1 },
+        //             shadowOpacity: 0.5,
+        //             shadowRadius: 12,
+        //             elevation: 0,
+        //           }}
+        //         >
+        //           <View className="w-10 h-10 rounded-full border-[2px] border-black/80 items-center justify-center">
+        //             <Ionicons name="add" size={26} color="rgba(0,0,0,0.85)" />
+        //           </View>
+        //         </TouchableOpacity>
+        //       </View>
+        //     </View>
+        //   );
+        // }
 
         // --- Using the Animated Component ---
         return (
@@ -141,7 +141,6 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="home" options={{ title: "Clients" }} />
       <Tabs.Screen name="visits" options={{ title: "Visits" }} />
-      <Tabs.Screen name="createClient" options={{ title: "" }} />
       <Tabs.Screen name="analytics" options={{ title: "Analytics" }} />
       <Tabs.Screen name="settings" options={{ title: "Settings" }} />
     </Tabs>
