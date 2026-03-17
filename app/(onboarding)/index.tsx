@@ -1,110 +1,77 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, Animated, Image, Text } from "react-native";
+import React from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import OnboardingIllustration from "@/components/onboarding/OnboardingIllustration";
-import { OnboardingText } from "@/components/onboarding/OnboardingText";
-import { PaginationDots } from "@/components/onboarding/PaginationDots";
-import { PrimaryButton } from "@/components/shared/PrimaryButton";
-import { ONBOARDING_DATA } from "@/constants/onboarding";
+import { Calendar, Users, Sparkles } from "lucide-react-native";
 import { router } from "expo-router";
-import onboarding1 from "@/assets/images/Loog.png"
+import logo from "@/assets/images/Loog.png";
+import { FeatureCard } from "@/components/FeatureCard/FeatureCard";
+import { PrimaryButton } from "@/components/shared/PrimaryButton";
 
 
-const OnboardingScreen: React.FC = () => {
-  const [currentStep, setCurrentStep] = useState<number>(0);
-  const totalSteps = ONBOARDING_DATA.length;
-  const content = ONBOARDING_DATA[currentStep];
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const slideAnim = useRef(new Animated.Value(20)).current;
-  const scaleAnim = useRef(new Animated.Value(0.95)).current;
+export default function OnboardingScreen() {
 
-  useEffect(() => {
-    fadeAnim.setValue(0);
-    slideAnim.setValue(20);
-    scaleAnim.setValue(0.95);
-
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.spring(slideAnim, {
-        toValue: 0,
-        friction: 9,
-        tension: 50,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 8,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, [currentStep]);
-
-  const handleNext = (): void => {
-    // if (currentStep < totalSteps - 1) {
-    //   setCurrentStep((prev) => prev + 1);
-    // } else {
-      router.replace("/auth/login");
-    // }
+  const handleNext = () => {
+    router.push("/auth/login");
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0F0B18]">
-      <Animated.View
-        style={{
-          flex: 3,
-          opacity: fadeAnim,
-          transform: [{ scale: scaleAnim }],
-        }}
-        className="items-center justify-end w-full pb-4"
-      >
-        {/* <OnboardingIllustration imageSrc={onboarding1} /> */}
-          <Image
-            source={onboarding1}
-            style={{
-              width: "80%",
-              // height: "30%",
-            }}
-            resizeMode="contain"
-          />
+    <SafeAreaView className="flex-1 bg-[#0F0B18] px-6 justify-between">
 
-        <View className="items-center px-8">
-          <Text className="text-white text-2xl font-semibold text-center ">Premium Studio Management</Text>
+      {/* Top Section */}
+      <View className="items-center mt-10">
+        <Image
+          source={logo}
+          resizeMode="contain"
+          style={{ width: 160, height: 80 }}
+        />
 
-        </View>
-      </Animated.View>
+        <Text className="text-white text-lg mt-2">
+          Premium Studio Management
+        </Text>
+      </View>
 
-      <Animated.View
-        style={{
-          flex: 2,
-          opacity: fadeAnim,
-          transform: [{ translateY: slideAnim }],
-        }}
-        className="px-8 justify-between pb-12"
-      >
-        {/* <View className="items-center">
-          <OnboardingText
-            title={content.title}
-            description={content.description}
-          />
-        </View> */}
+      {/* Middle Section */}
+      <View className="gap-y-4">
 
-        <View className="w-full gap-y-8">
-          {/* <View className="py-4">
-            <PaginationDots total={totalSteps} activeIndex={currentStep} />
-          </View> */}
-          <PrimaryButton
+        <FeatureCard
+          title="Studio Booking"
+          description="Book premium studios with ease"
+          icon={<Calendar color="#5B2EFF" size={20} />}
+        />
+
+        <FeatureCard
+          title="Collaboration"
+          description="Work together seamlessly"
+          icon={<Users color="#5B2EFF" size={20} />}
+        />
+
+        <FeatureCard
+          title="Premium Features"
+          description="Professional tools for artists"
+          icon={<Sparkles color="#5B2EFF" size={20} />}
+        />
+
+      </View>
+
+      {/* Bottom Section */}
+      <View className="mb-6">
+
+         <PrimaryButton
             label={"Get Started"}
             onPress={handleNext}
           />
-        </View>
-      </Animated.View>
+
+        <Text className="text-center text-gray-400 mt-4">
+          I Already Have an Account
+        </Text>
+
+        <Text className="text-center text-gray-500 text-xs mt-4 px-6">
+          By continuing, you agree to our Terms of Service and Privacy Policy
+        </Text>
+
+      </View>
+
     </SafeAreaView>
   );
-};
-
-export default OnboardingScreen;
+}
