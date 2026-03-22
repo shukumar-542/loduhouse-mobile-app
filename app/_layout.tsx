@@ -81,7 +81,7 @@ function AppContent() {
         paddingBottom: insets.bottom,
         paddingLeft: insets.left,
         paddingRight: insets.right,
-        backgroundColor: "#0F0B18",
+        backgroundColor: "#000000",
       }}
     >
       <StatusBar style="light" translucent backgroundColor="transparent" />
@@ -89,7 +89,7 @@ function AppContent() {
         <Stack
           screenOptions={{
             headerShown: false,
-            contentStyle: { backgroundColor: "#0F0B18" },
+            contentStyle: { backgroundColor: "#000000" },
             animation: "slide_from_right",
           }}
         />
