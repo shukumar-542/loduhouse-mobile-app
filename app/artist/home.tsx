@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { Bell, Calendar, Mic, Music, Volume2, CheckCircle, Folder } from "lucide-react-native";
 import { router } from "expo-router";
+import { PrimaryButton } from "@/components/shared/PrimaryButton";
 
 const StatusCard = ({ icon, count, label, bgColor }: any) => {
   return (
@@ -40,6 +41,10 @@ const ProjectItem = ({ title, status, color }: any) => {
   );
 };
 
+const handleNext = () => {
+  router.push("/notification");
+}
+
 export default function Home() {
   return (
     <ScrollView className="flex-1 bg-black px-4 pt-10"
@@ -56,19 +61,20 @@ export default function Home() {
         </View>
 
         <TouchableOpacity
-        onPress={() => router.push("/notification")}
-        className="w-10 h-10 rounded-xl bg-[#111827] items-center justify-center border border-gray-800">
+          onPress={() => router.push("/notification")}
+          className="w-10 h-10 rounded-xl bg-[#111827] items-center justify-center border border-gray-800">
           <Bell color="white" size={20} />
         </TouchableOpacity>
       </View>
 
       {/* Button */}
-      <TouchableOpacity className="bg-[#7C3AED] py-4 rounded-xl flex-row items-center justify-center mb-6">
+      <TouchableOpacity onPress={()=> router.push("/artist/bookings")} className="bg-[#5B2EFF] py-4 rounded-xl flex-row items-center justify-center mb-6">
         <Calendar color="white" size={18} />
         <Text className="text-white ml-2 font-semibold">
           Book Studio Session
         </Text>
       </TouchableOpacity>
+     
 
       {/* Project Status */}
       <Text className="text-white text-lg font-semibold mb-3">
