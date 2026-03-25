@@ -92,14 +92,14 @@ const SearchBox = ({
         {isFetching ? (
           <ActivityIndicator
             size="small"
-            color="#C9A367"
+            color="#F1F1F2"
             style={{ marginRight: 8 }}
           />
         ) : (
-          <Search size={22} color="#C9A367" style={{ marginRight: 8 }} />
+          <Search size={22} color="#F1F1F2" style={{ marginRight: 8 }} />
         )}
         <TextInput
-          style={{ flex: 1, color: "#C9A367", fontSize: 16, height: "100%" }}
+          style={{ flex: 1, color: "#F1F1F2", fontSize: 16, height: "100%" }}
           placeholder={placeholder}
           placeholderTextColor="#3f3f46"
           value={value}
@@ -109,7 +109,7 @@ const SearchBox = ({
           }}
           onSubmitEditing={onSubmitSearch}
           returnKeyType="search"
-          cursorColor="#C9A367"
+          cursorColor="#F1F1F2"
           selectionColor="#6366f1"
           autoCapitalize="none"
         />
@@ -127,7 +127,7 @@ const SearchBox = ({
             backgroundColor: "#101012",
             borderWidth: 1,
             borderTopWidth: 0,
-            borderColor: "#C9A367",
+            borderColor: "#F1F1F2",
             borderBottomLeftRadius: 16,
             borderBottomRightRadius: 16,
             maxHeight: dropdownMaxHeight,
@@ -182,7 +182,7 @@ const SearchBox = ({
                           justifyContent: "center",
                         }}
                       >
-                        <Text style={{ color: "#C9A367", fontWeight: "700" }}>
+                        <Text style={{ color: "#F1F1F2", fontWeight: "700" }}>
                           {item.fullName?.[0] ?? "?"}
                         </Text>
                       </View>
@@ -203,7 +203,7 @@ const SearchBox = ({
                         {item.email}
                       </Text>
                     </View>
-                    <Search size={14} color="#3f3f46" />
+                    <Search size={14} color="#F1F1F2" />
                   </TouchableOpacity>
                 );
               }
@@ -217,7 +217,7 @@ const SearchBox = ({
                     paddingHorizontal: 16,
                     paddingVertical: 12,
                     borderBottomWidth: 1,
-                    borderBottomColor: "#1e1e2a",
+                    borderBottomColor: "#4F4F59",
                   }}
                 >
                   {item.photos?.[0] ? (
@@ -243,7 +243,7 @@ const SearchBox = ({
                         justifyContent: "center",
                       }}
                     >
-                      <Search size={16} color="#C9A367" />
+                      <Search size={16} color="#F1F1F2" />
                     </View>
                   )}
                   <View style={{ flex: 1 }}>
@@ -267,7 +267,7 @@ const SearchBox = ({
                       })}
                     </Text>
                   </View>
-                  <Search size={14} color="#3f3f46" />
+                  <Search size={14} color="#F1F1F2" />
                 </TouchableOpacity>
               );
             }}
