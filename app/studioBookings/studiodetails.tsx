@@ -1,13 +1,29 @@
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { ArrowLeft, MapPin, Star } from "lucide-react-native";
+import { ArrowLeft, MapPin, Shield, Star } from "lucide-react-native";
+import { useState } from "react";
+import img1 from "@/assets/images/gallary1.png";
+import img2 from "@/assets/images/gallary2.png";
+import img3 from "@/assets/images/gallary3.png";
+import img4 from "@/assets/images/gallary4.png";
+
 
 export default function StudioDetails() {
+    const [activeTab, setActiveTab] = useState("gallery");
     const { id } = useLocalSearchParams();
 
+
+    const policies = [
+        { id: 1, text: "Minimum booking: 2 hours" },
+        { id: 2, text: "Cancellation: 24 hours notice required" },
+        { id: 3, text: "Deposit: 30% advance payment" },
+        { id: 4, text: "Late arrival: 15 min grace period" },
+        { id: 5, text: "Equipment damage: Full replacement cost" },
+    ];
+
     return (
-        <View className="flex-1 bg-black px-4 pt-3">
-            <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
+        <View className="flex-1 bg-black pt-3 ">
+            <ScrollView >
                 {/* Header Back Button section */}
                 <View className="w-full flex-row  gap-3  ">
 
@@ -25,14 +41,14 @@ export default function StudioDetails() {
                         </Text>
                         <View className="flex-row items-center">
                             <Star size={14} color="#FACC15" fill="#FACC15" />
-                            <Text className="text-gray-400 ml-1 text-sm">
+                            <Text className="text-white ml-1 text-sm">
                                 4.9 (127)
                             </Text>
 
-                            <Text className="text-gray-500 mx-2">•</Text>
+                            <Text className=" mx-2">•</Text>
 
                             <MapPin size={14} color="#9CA3AF" />
-                            <Text className="text-gray-400 ml-1 text-sm">
+                            <Text className="text-white ml-1 text-sm">
                                 Dhaka, Bangladesh
                             </Text>
                         </View>
@@ -40,7 +56,114 @@ export default function StudioDetails() {
                     </View>
                 </View>
 
-            </ScrollView>
-        </View>
+
+                {/* Studio Tab Section */}
+                <View className="flex-row justify-between p-1 mt-5 bg-[#111111] rounded-2xl">
+                    {
+                        ["gallery", "equipment", "policy"]?.map((tab) => (
+                            <TouchableOpacity
+                                key={tab}
+                                onPress={() => setActiveTab(tab)}
+                                className={`flex-1 py-3 rounded-2xl ${activeTab === tab ? "bg-[#5B2EFF] text-white" : "text-[#4F4F59]"}`}
+
+                            >
+                                <Text className={`text-center capitalize ${activeTab === tab ? "text-white" : "text-[#4F4F59]"}`}>
+                                    {tab}
+                                </Text>
+                            </TouchableOpacity>
+                        ))
+                    }
+                </View>
+
+                {/* Tab Content */}
+                {activeTab === "gallery" && (
+                    <View>
+
+                        <View className="mt-4 bg-[#111111] border border-[#4F4F59] p-4 rounded-2xl">
+
+                            <Text className="text-white text-xl font-semibold mb-3">
+                                Studio Gallery
+                            </Text>
+
+                            <View className="flex-row flex-wrap justify-between">
+                                {[img1, img2, img3, img4].map((item, index) => (
+                                    <Image
+                                        key={index}
+                                        source={item}
+                                        className="w-[48%] h-36 rounded-xl mb-3"
+                                    />
+                                ))}
+                            </View>
+                        </View>
+                        <View className="mt-6 bg-[#111111] border border-[#4F4F59] p-4 rounded-2xl">
+                            <Text className="text-white text-xl font-semibold mb-3">
+                                About Studio
+                            </Text>
+                            <Text className="text-white text-md leading-6">
+                                Professional recording studio with state-of-the-art equipment and acoustic treatment. Perfect for vocal recording, mixing, and mastering.
+                            </Text>
+                        </View>
+                    </View>
+                )}
+
+                {/* Equipment Tab */}
+
+                {activeTab === "equipment" && (
+                    <View className="mt-4 bg-[#111827] p-4 rounded-2xl">
+                        <Text className="text-white">
+                            🎤 High-end microphones, mixing console, monitors...
+                        </Text>
+                    </View>
+                )}
+
+                {/* Policy Tab */}
+
+                {activeTab === "policy" && (
+                    <View className="mt-6 bg-[#111111] border border-[#4F4F59] p-4 rounded-2xl">
+                        <View className="flex-row items-center  gap-3 mb-3">
+                            <Shield size={24} color="#5B2EFF" />
+                            <Text className="text-white text-2xl font-semibold">
+                                Booking Policy
+                            </Text>
+                        </View>
+                        <View className="gap-y-3.5"> 
+                            {policies.map((item) => (
+                                <View key={item.id} className="flex-row items-start gap-3"> 
+                                    <View className="w-2 h-2 rounded-full bg-[#5B2EFF] mt-2.5" />
+
+                                    <Text className="text-white text-lg flex-1 leading-7"> 
+                                        {item.text}
+                                    </Text>
+                                </View>
+                            ))}
+                        </View>
+
+
+                    </View>
+                )}
+
+
+
+
+            </ScrollView >
+            {/* Bottom Fixed Section */}
+            <View className="absolute bottom-0 w-full bg-[#111111] py-4 px-5 border-t border-[#4F4F59]">
+
+                <Text className="text-gray-400 text-xl">Hourly Rate</Text>
+                <Text className="text-white text-2xl mt-2 font-bold mb-3">
+                    $150/hr
+                </Text>
+
+                <TouchableOpacity
+                    className="bg-[#5B2EFF] py-3 rounded-xl items-center"
+                    onPress={() => router.push("/studioBooking/booking")}
+                >
+                    <Text className="text-white text-xl font-semibold">
+                        Book This Studio
+                    </Text>
+                </TouchableOpacity>
+
+            </View>
+        </View >
     );
 }
