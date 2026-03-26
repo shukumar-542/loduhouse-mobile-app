@@ -55,7 +55,7 @@ const Booking = () => {
                 placeholder="Search studios..."
                 value={search}
                 onChangeText={setSearch}
-                mode="visits" // 👈 important (studio/booking related)
+                mode="visits" 
             />
 
             {/* Booking Cards */}
@@ -69,7 +69,10 @@ const Booking = () => {
                     rating={item.rating}
                     reviews={item.reviews}
                     image={item.image}
-                    onPress={() => console.log(item.title)}
+                    onPress={() => router.push({
+                        pathname: "/studioBookings/studiodetails",
+                        params: { id: item.id }
+                    })}
                 />
             ))}
 
