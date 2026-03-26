@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, TouchableOpacity, Image } from "react-native";
 import { router, useLocalSearchParams } from "expo-router";
-import { ArrowLeft, MapPin, Shield, Star } from "lucide-react-native";
+import { ArrowLeft, Headphones, MapPin, Mic, Music, Shield, Speaker, Star } from "lucide-react-native";
 import { useState } from "react";
 import img1 from "@/assets/images/gallary1.png";
 import img2 from "@/assets/images/gallary2.png";
@@ -19,6 +19,33 @@ export default function StudioDetails() {
         { id: 3, text: "Deposit: 30% advance payment" },
         { id: 4, text: "Late arrival: 15 min grace period" },
         { id: 5, text: "Equipment damage: Full replacement cost" },
+    ];
+
+    const equipmentList = [
+        {
+            id: 1,
+            name: "Neumann U87",
+            category: "Microphone",
+            icon: <Mic size={24} color="#5B2EFF" />,
+        },
+        {
+            id: 2,
+            name: "Audio-Technica ATH-M50x U87",
+            category: "Headphones",
+            icon: <Headphones size={24} color="#5B2EFF" />,
+        },
+        {
+            id: 3,
+            name: "SSL Console",
+            category: "Mixing Desk",
+            icon: <Music size={24} color="#5B2EFF" />,
+        },
+        {
+            id: 4,
+            name: "Yamaha HS8",
+            category: "Studio Monitors",
+            icon: <Speaker size={24} color="#5B2EFF" />,
+        },
     ];
 
     return (
@@ -109,10 +136,36 @@ export default function StudioDetails() {
                 {/* Equipment Tab */}
 
                 {activeTab === "equipment" && (
-                    <View className="mt-4 bg-[#111827] p-4 rounded-2xl">
-                        <Text className="text-white">
-                            🎤 High-end microphones, mixing console, monitors...
+                    <View className="mt-4 bg-[#111111] border border-[#262626] p-5 rounded-[32px]">
+                        {/* Title */}
+                        <Text className="text-white text-2xl font-bold mb-5">
+                            Available Equipment
                         </Text>
+
+                        {/* Equipment Cards */}
+                        <View className="gap-y-3">
+                            {equipmentList.map((item) => (
+                                <View
+                                    key={item.id}
+                                    className="flex-row items-center bg-black border border-[#262626] p-4 rounded-2xl"
+                                >
+                                    {/* Icon Circle */}
+                                    <View className="w-12 h-12 bg-[#1A1135] rounded-full items-center justify-center mr-4">
+                                        {item.icon}
+                                    </View>
+
+                                    {/* Text Content */}
+                                    <View>
+                                        <Text className="text-white text-lg font-semibold">
+                                            {item.name}
+                                        </Text>
+                                        <Text className="text-[#A1A1AA] text-sm">
+                                            {item.category}
+                                        </Text>
+                                    </View>
+                                </View>
+                            ))}
+                        </View>
                     </View>
                 )}
 
@@ -126,12 +179,12 @@ export default function StudioDetails() {
                                 Booking Policy
                             </Text>
                         </View>
-                        <View className="gap-y-3.5"> 
+                        <View className="gap-y-3.5">
                             {policies.map((item) => (
-                                <View key={item.id} className="flex-row items-start gap-3"> 
+                                <View key={item.id} className="flex-row items-start gap-3">
                                     <View className="w-2 h-2 rounded-full bg-[#5B2EFF] mt-2.5" />
 
-                                    <Text className="text-white text-lg flex-1 leading-7"> 
+                                    <Text className="text-white text-lg flex-1 leading-7">
                                         {item.text}
                                     </Text>
                                 </View>
@@ -145,7 +198,11 @@ export default function StudioDetails() {
 
 
 
+
+
             </ScrollView >
+
+
             {/* Bottom Fixed Section */}
             <View className="absolute bottom-0 w-full bg-[#111111] py-4 px-5 border-t border-[#4F4F59]">
 
