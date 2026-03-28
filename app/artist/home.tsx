@@ -68,7 +68,7 @@ export default function Home() {
       </View>
 
       {/* Button */}
-      <TouchableOpacity onPress={()=> router.push("/artist/bookings")} className="bg-[#5B2EFF] py-4 rounded-xl flex-row items-center justify-center mb-6">
+      <TouchableOpacity onPress={()=> router.push("/studioBookings/allstudio")} className="bg-[#5B2EFF] py-4 rounded-xl flex-row items-center justify-center mb-6">
         <Calendar color="white" size={18} />
         <Text className="text-white ml-2 font-semibold">
           Book Studio Session

@@ -195,13 +195,7 @@ export default function StudioDetails() {
                     </View>
                 )}
 
-
-
-
-
-
             </ScrollView >
-
 
             {/* Bottom Fixed Section */}
             <View className="absolute bottom-0 w-full bg-[#111111] py-4 px-5 border-t border-[#4F4F59]">
