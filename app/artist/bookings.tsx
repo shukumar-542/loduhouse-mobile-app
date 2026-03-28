@@ -1,4 +1,7 @@
+import ApprovedBooking from '@/components/ApprovedBooking/ApprovedBooking';
+import CompleteBooking from '@/components/CompleteBooking/CompleteBooking';
 import CustomCalender from '@/components/CustomCalender/CustomCalender'
+import PendingBookingCard from '@/components/PendingBookingCard/PendingBookingCard';
 import BookingStatusHeader from '@/components/shared/BookingStatusHeader';
 import React from 'react'
 import { ScrollView, Text, View } from 'react-native'
@@ -6,7 +9,6 @@ import { ScrollView, Text, View } from 'react-native'
 
 const Booking = () => {
 
-    const bookedDates = ["2026-03-15", "2026-03-18", "2026-03-20"];
 
 
 
@@ -28,9 +30,15 @@ const Booking = () => {
 
             {/* Pending bookings */}
             <BookingStatusHeader bookingStatus={"Pending"} totalItem={1} />
-            <BookingStatusHeader bookingStatus={"Approved"} totalItem={2} />
-            <BookingStatusHeader bookingStatus={"Completed"} totalItem={3} />
+            <PendingBookingCard/>
 
+            {/* Approved Bookings  */}
+            <BookingStatusHeader bookingStatus={"Approved"} totalItem={2} />
+            <ApprovedBooking/>
+
+            {/* Complete bookigns */}
+            <BookingStatusHeader bookingStatus={"Completed"} totalItem={3} />
+            <CompleteBooking/>
 
         </ScrollView>
     )
