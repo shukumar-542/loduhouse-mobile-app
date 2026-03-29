@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native'
 import React from 'react'
-import { CalendarDays, Clock, Headphones, Hourglass, MapPin } from 'lucide-react-native'
+import { CalendarDays, Clock, Headphones,  MapPin } from 'lucide-react-native'
 
 export default function CompleteBooking() {
   return (

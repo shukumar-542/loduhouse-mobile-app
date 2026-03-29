@@ -207,7 +207,7 @@ export default function StudioDetails() {
 
                 <TouchableOpacity
                     className="bg-[#5B2EFF] py-3 rounded-xl items-center"
-                    onPress={() => router.push("/studioBooking/booking")}
+                    onPress={() => router.push("/studioBookings/selectDate")}
                 >
                     <Text className="text-white text-xl font-semibold">
                         Book This Studio
