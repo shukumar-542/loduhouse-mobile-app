@@ -1,6 +1,8 @@
 import { Tabs } from "expo-router";
 import { Home, Calendar, Folder, CreditCard, User } from "lucide-react-native";
 
+
+
 export default function ArtistTabs() {
   return (
     <Tabs

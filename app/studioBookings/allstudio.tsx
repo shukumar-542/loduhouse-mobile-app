@@ -33,9 +33,7 @@ const allstudio = () => {
         },
     ];
     return (
-        <ScrollView className="flex-1 bg-black px-4 pt-2 "
-           
-        >
+        <ScrollView className="flex-1 bg-black px-4 pt-2">
             <TouchableOpacity
                 onPress={() => router.back()}
                 className="flex-row items-center mb-4"

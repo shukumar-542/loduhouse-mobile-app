@@ -1,54 +1,56 @@
 import React, { useState } from "react";
 import { View, Text, TextInput } from "react-native";
 
-interface InputProps {
-  label: string;
+interface FieldProps {
   placeholder: string;
   value: string;
   onChangeText?: (text: string) => void;
+  icon?: React.ReactNode;
+  multiline?: boolean;
   editable?: boolean;
-  className?: string; // additional styling for the TextInput
-  disabledClassName?: string; // styling for the container when disabled
 }
 
-export const TextField: React.FC<InputProps> = ({
-  label,
+const Field: React.FC<FieldProps> = ({
   placeholder,
   value,
   onChangeText,
+  icon,
+  multiline = false,
   editable = true,
-  className = "",
-  disabledClassName = "bg-gray-800 opacity-70", // sensible default
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
-  // Determine container background
-  let containerBgClass = "";
-  if (!editable) {
-    containerBgClass = disabledClassName;
-  } else if (isFocused) {
-    containerBgClass = "bg-[#121217]";
-  }
-
   return (
-    <View className="mb-5 w-full">
-      <Text className="text-white text-base font-bold mb-2 ml-1">{label}</Text>
-      <View
-        className={`border border-[#F1F1F2] rounded-xl px-4 ${containerBgClass}`}
-      >
-        <TextInput
-          placeholder={placeholder}
-          placeholderTextColor="#fff"
-          value={value}
-          onChangeText={onChangeText}
-          keyboardType="default"
-          autoCapitalize="words"
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          editable={editable}
-          className={`text-white text-base ${className}`}
-        />
-      </View>
+    <View className="bg-[#111111] border border-gray-800 rounded-2xl  mb-4">
+
+    
+
+      {/* Input / Textarea */}
+      <TextInput
+        placeholder={placeholder}
+        placeholderTextColor="#6B7280"
+        value={value}
+        onChangeText={onChangeText}
+        editable={editable}
+        multiline={multiline}
+        numberOfLines={multiline ? 4 : 1}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        className={`
+          text-white px-4 py-4 rounded-xl border
+          ${multiline ? "h-28 text-top" : ""}
+          ${
+            isFocused
+              ? "border-[#5B2EFF] bg-[#1A1A1A]"
+              : "border-gray-700 bg-black"
+          }
+        `}
+        style={{
+          textAlignVertical: multiline ? "top" : "center",
+        }}
+      />
     </View>
   );
 };
+
+export default Field;
