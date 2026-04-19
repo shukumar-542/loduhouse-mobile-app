@@ -1,11 +1,12 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import React, { useState } from 'react'
-import { ArrowLeft, FileText, FolderOpen, Headphones, MessageSquare, Users } from 'lucide-react-native'
+import { ArrowLeft, Building, FileText, FolderOpen, Headphones, MessageSquare, Users } from 'lucide-react-native'
 import { router } from 'expo-router'
 import FormCard from '@/components/shared/FormCard';
 import Field from '@/components/shared/TextField';
 import SelectField from '@/components/shared/SelectField';
 import EngineerCard from '@/components/shared/EngineeriCard';
+import RoomCard from '@/components/shared/RoomCard';
 
 const engineers = [
     {
@@ -34,11 +35,36 @@ const engineers = [
     },
 ];
 
+const rooms = [
+    {
+        id: "1",
+        name: "Jupiter Room",
+        type: "Recording & Production",
+        capacity: "4-8 people",
+        features: ["SSL Console", "Neumann Microphones", "Acoustic Treatment"],
+    },
+    {
+        id: "2",
+        name: "Mars Room",
+        type: "Mixing & Mastering",
+        capacity: "2-4 people",
+        features: ["High-End Monitors", "Analog Outboard Gear", "Mastering Suite"],
+    },
+    {
+        id: "3",
+        name: "Mercury Room",
+        type: "Vocal Booth",
+        capacity: "1-3 people",
+        features: ["Isolation Booth", "Vintage Mics", "Vocal Chain"],
+    },
+];
+
 export default function bookingDetails() {
     const [projectName, setProjectName] = useState("");
     const [sessionType, setSessionType] = useState("");
     const [attendees, setAttendees] = useState("");
     const [selectedEngineer, setSelectedEngineer] = useState("2");
+    const [selectedRoom, setSelectedRoom] = useState("1");
 
     return (
         <View className="flex-1 bg-black px-4 pt-6">
@@ -199,8 +225,42 @@ export default function bookingDetails() {
                             />
                         ))}
                     </FormCard>
+
+                    {/* Room Selection */}
+                    <FormCard
+                        title="Select Studio Room"
+                        icon={<Building color="#5B2EFF" size={22} />}
+                    >
+                        {rooms.map((item) => (
+                            <RoomCard
+                                key={item.id}
+                                item={item}
+                                selectedId={selectedRoom}
+                                onSelect={setSelectedRoom}
+                            />
+                        ))}
+                    </FormCard>
+                </View>
+                <View className="pb-6">
+                    <TouchableOpacity
+                        onPress={() => router.push("/studioBookings/paymentConfirmation")}
+                        className={`py-4 mt-5 rounded-xl items-center bg-[#5B2EFF] }`}
+                    >
+                        <Text className="text-white font-semibold text-lg">
+                            Review & Confirm Booking
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+                <View className="bg-[#1A1133] p-4  rounded-md border border-[#5B2EFF] flex-row items-center">
+                    <Text className="text-lg">
+                        <Text className="text-white font-bold">📌 Note: </Text>
+                        <Text className="text-[#5B2EFF] font-medium leading-7">
+                            You can add team members to this project after booking is confirmed.
+                        </Text>
+                    </Text>
                 </View>
             </ScrollView>
+
 
         </View>
     )

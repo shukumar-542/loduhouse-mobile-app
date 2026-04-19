@@ -9,7 +9,7 @@ import {
   Modal,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { TextField } from "@/components/shared/TextField";
+// import { TextField } from "@/components/shared/TextField";
 import { MobileNumberInput } from "@/components/shared/PhoneNumberField";
 import Header from "@/components/shared/Header";
 import useEditUserProfile from "@/services/hooks/settings/useEditUserProfile";
@@ -89,12 +89,12 @@ export default function ProfileSetting() {
           </View>
         </View>
 
-        <TextField
+        {/* <TextField
           label="Your Name"
           placeholder="Enter your name"
           value={name}
           onChangeText={setName}
-        />
+        /> */}
 
         <MobileNumberInput
           label="Mobile Number"
@@ -103,20 +103,20 @@ export default function ProfileSetting() {
           onChangeText={setPhone}
         />
 
-        <TextField
+        {/* <TextField
           label="Email"
           value={email}
           editable={false}
           placeholder="Your email address"
           disabledClassName="bg-gray-800"
-        />
+        /> */}
 
-        <TextField
+        {/* <TextField
           label="Location"
           placeholder="Enter your location"
           value={location}
           onChangeText={setLocation}
-        />
+        /> */}
       </ScrollView>
 
       <View className="px-5 pb-8">
