@@ -1,14 +1,44 @@
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import React, { useState } from 'react'
-import { ArrowLeft, FileText, FolderOpen, MessageSquare } from 'lucide-react-native'
+import { ArrowLeft, FileText, FolderOpen, Headphones, MessageSquare, Users } from 'lucide-react-native'
 import { router } from 'expo-router'
 import FormCard from '@/components/shared/FormCard';
 import Field from '@/components/shared/TextField';
+import SelectField from '@/components/shared/SelectField';
+import EngineerCard from '@/components/shared/EngineeriCard';
+
+const engineers = [
+    {
+        id: "any",
+        name: "Any Available Engineer",
+        desc: "System will assign based on availability",
+        experience: "",
+        rating: null,
+        image: null,
+    },
+    {
+        id: "1",
+        name: "Rafsan Ahmed",
+        desc: "Mixing & Mastering Specialist",
+        experience: "8+ years experience",
+        rating: 4.9,
+        image: require("@/assets/images/Avater.png"),
+    },
+    {
+        id: "2",
+        name: "Shukumar Ghosh",
+        desc: "Vocal Recording Expert",
+        experience: "6+ years experience",
+        rating: 4.8,
+        image: require("@/assets/images/Avater.png"),
+    },
+];
 
 export default function bookingDetails() {
     const [projectName, setProjectName] = useState("");
-
-
+    const [sessionType, setSessionType] = useState("");
+    const [attendees, setAttendees] = useState("");
+    const [selectedEngineer, setSelectedEngineer] = useState("2");
 
     return (
         <View className="flex-1 bg-black px-4 pt-6">
@@ -81,6 +111,17 @@ export default function bookingDetails() {
 
 
                     {/* Input Fields */}
+                    <FormCard
+                        title="Number of Attendees"
+                        icon={<Users color="#5B2EFF" size={22} />}
+                    >
+                        <Field
+                            placeholder="0"
+                            value={attendees}
+                            onChangeText={setAttendees}
+                            keyboardType="numeric"
+                        />
+                    </FormCard>
                     {/* Project Name  */}
                     <FormCard
                         title="Project Name"
@@ -105,6 +146,17 @@ export default function bookingDetails() {
                         />
                     </FormCard>
                     {/* Session Type */}
+                    <FormCard
+                        title="Session Type"
+                        icon={<Headphones color="#5B2EFF" size={22} />}
+                    >
+                        <SelectField
+                            value={sessionType}
+                            placeholder="Recording"
+                            options={["Recording", "Mixing", "Mastering", "Production", "Other"]}
+                            onSelect={setSessionType}
+                        />
+                    </FormCard>
                     {/* Number of attendees */}
 
                     {/* Session Note */}
@@ -131,6 +183,21 @@ export default function bookingDetails() {
                             onChangeText={setProjectName}
                             multiline
                         />
+                    </FormCard>
+
+                    {/* Engineer Selection */}
+                    <FormCard
+                        title="Select Engineer"
+                        icon={<Headphones color="#5B2EFF" size={22} />}
+                    >
+                        {engineers.map((item) => (
+                            <EngineerCard
+                                key={item.id}
+                                item={item}
+                                selectedId={selectedEngineer}
+                                onSelect={setSelectedEngineer}
+                            />
+                        ))}
                     </FormCard>
                 </View>
             </ScrollView>

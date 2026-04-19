@@ -8,6 +8,7 @@ interface FieldProps {
   icon?: React.ReactNode;
   multiline?: boolean;
   editable?: boolean;
+  keyboardType?: "default" | "numeric" ;
 }
 
 const Field: React.FC<FieldProps> = ({
@@ -17,6 +18,7 @@ const Field: React.FC<FieldProps> = ({
   icon,
   multiline = false,
   editable = true,
+  keyboardType,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -34,6 +36,7 @@ const Field: React.FC<FieldProps> = ({
         editable={editable}
         multiline={multiline}
         numberOfLines={multiline ? 4 : 1}
+        keyboardType={keyboardType || "default"} 
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         className={`
