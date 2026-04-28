@@ -1,5 +1,6 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { Calendar, Clock, User } from "lucide-react-native";
+import { router } from "expo-router";
 
 const SessionCard = ({ item }: any) => {
   const getStatusStyle = () => {
@@ -77,8 +78,8 @@ const SessionCard = ({ item }: any) => {
       <View className="h-[1px] bg-gray-800 my-4" />
 
       {/* View Details */}
-      <TouchableOpacity>
-        <Text className="text-[#7C3AED] text-sm font-medium">
+      <TouchableOpacity onPress={()=> router.push("/producerProject/projectDetails")}>
+        <Text className="text-[#5B2EFF] text-sm font-medium">
           View Details
         </Text>
       </TouchableOpacity>
