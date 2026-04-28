@@ -9,7 +9,7 @@ import { ScrollView, Text, View } from 'react-native'
 
 const Booking = () => {
 
-
+const BOOKED = ["2026-04-15", "2026-04-20", "2026-04-25"];
 
 
 
@@ -26,7 +26,7 @@ const Booking = () => {
             </View>
 
             {/* Calender section */}
-            <CustomCalender />
+            <CustomCalender bookedDates={BOOKED} mode="detailed"  />
 
             {/* Pending bookings */}
             <BookingStatusHeader bookingStatus={"Pending"} totalItem={1} />
