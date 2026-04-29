@@ -10,6 +10,8 @@ config.transformer.babelTransformerPath =
 config.resolver.assetExts = config.resolver.assetExts.filter(
   (ext) => ext !== "svg",
 );
+config.resolver.assetExts.push("mp3");  // ← add
+
 config.resolver.sourceExts = [...config.resolver.sourceExts, "svg"];
 
 // --- NativeWind integration ---

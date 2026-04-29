@@ -5,11 +5,14 @@ import {
   ScrollView,
   Image,
 } from "react-native";
-import React from "react";
-import { ArrowLeft, CheckCircle, Play, Download, Headphones } from "lucide-react-native";
+import React, { useState } from "react";
+import { ArrowLeft, CheckCircle, Play, Download, Headphones, User } from "lucide-react-native";
 import { router } from "expo-router";
+import AudioPlayerCard from "../../components/AudioPlayerCard/AudioPlayerCard ";
+import ProjectMembers from "@/components/Projectmembers/Projectmembers";
 
 const ProjectDetails = () => {
+  const [activeTab, setActiveTab] = useState("file")
 
   const workflowData = [
     {
@@ -62,19 +65,25 @@ const ProjectDetails = () => {
       </View>
 
       {/* Tabs */}
-      <View className="flex-row bg-[#111111] rounded-xl p-1 mb-4">
-        <View className="flex-1 bg-[#5B2EFF] py-2 rounded-lg">
-          <Text className="text-white text-center">File</Text>
-        </View>
-        <View className="flex-1 py-2">
-          <Text className="text-gray-400 text-center">Comments</Text>
-        </View>
-        <View className="flex-1 py-2">
-          <Text className="text-gray-400 text-center">Member</Text>
-        </View>
+
+      <View className="flex-row justify-between p-1 mt-2 bg-[#111111] rounded-2xl mb-5">
+        {
+          ["file", "comments", "member"]?.map((tab) => (
+            <TouchableOpacity
+              key={tab}
+              onPress={() => setActiveTab(tab)}
+              className={`flex-1 py-3 rounded-2xl ${activeTab === tab ? "bg-[#5B2EFF] text-white" : "text-[#4F4F59]"}`}
+
+            >
+              <Text className={`text-center capitalize ${activeTab === tab ? "text-white" : "text-[#4F4F59]"}`}>
+                {tab}
+              </Text>
+            </TouchableOpacity>
+          ))
+        }
       </View>
 
-      {/* Workflow */}
+      {/* Workflow  section */}
       <View className="bg-[#111111] p-4 rounded-2xl border border-gray-800 mb-4">
         <Text className="text-white text-3xl font-semibold mb-4">
           Project Workflow
@@ -112,63 +121,87 @@ const ProjectDetails = () => {
         ))}
       </View>
 
-      {/* Engineer */}
-      <View className="bg-[#111111] p-4 rounded-2xl border border-gray-800 mb-4">
-        <View className="flex-row items-center gap-2 mb-3">
-          <Headphones color={"#5B2EFF"} />
+      {
+        activeTab === "file" && <View>
+          <View className="bg-[#111111] p-4 rounded-2xl border border-gray-800 mb-4">
+            <View className="flex-row items-center gap-2 mb-3">
+              <Headphones color={"#5B2EFF"} />
 
-          <Text className="text-white text-xl font-semibold ">
-            Engineer
-          </Text>
-        </View>
+              <Text className="text-white text-xl font-semibold ">
+                Engineer
+              </Text>
+            </View>
 
-        <View className="flex-row items-center bg-black p-3 rounded-xl">
-          <Image
-            source={{
-              uri: "https://randomuser.me/api/portraits/men/32.jpg",
-            }}
-            className="w-14 h-14 rounded-full mr-3"
-          />
+            <View className="flex-row items-center bg-black p-3 rounded-xl">
+              <Image
+                source={{
+                  uri: "https://randomuser.me/api/portraits/men/32.jpg",
+                }}
+                className="w-14 h-14 rounded-full mr-3"
+              />
 
-          <View>
-            <Text className="text-white text-xl font-semibold mb-1">
-              Rafsan Ahmed ⭐ 4.9
-            </Text>
-            <Text className="text-gray-400 text-sm mb-1">
-              Mixing & Mastering Specialist
-            </Text>
-            <Text className="text-purple-400 text-xs">
-              8+ years experience
-            </Text>
+              <View>
+                <Text className="text-white text-xl font-semibold mb-1">
+                  Shukumar  ⭐ 4.9
+                </Text>
+                <Text className="text-gray-400 text-sm mb-1">
+                  Mixing & Mastering Specialist
+                </Text>
+                <Text className="text-purple-400 text-xs">
+                  8+ years experience
+                </Text>
+              </View>
+            </View>
+          </View>
+          {/* File Card */}
+          <View className="bg-[#111111] p-4 rounded-2xl border border-gray-800">
+            <AudioPlayerCard />
           </View>
         </View>
-      </View>
+      }
+      {
+        activeTab === "comments" && <View>
+          <View className="text-white bg-[#111111] p-4 rounded-2xl border border-gray-800">
+            <View className="flex-row gap-5 border-b  border-[#4F4F59] pb-5">
+              <View>
+                <View className="bg-[#5B2EFF33] p-2 rounded-md">
+                  <User color={"#5B2EFF"} />
+                </View>
+              </View>
+              <View>
+                <Text className="text-white text-xl font-semibold">Studio Owner</Text>
+                <Text className="text-white text-sm">3 hours ago</Text>
+                <Text className="text-gray-400 text-xl mt-2">Latest mix is ready for review</Text>
+              </View>
 
-      {/* File Card */}
-      <View className="bg-[#111111] p-4 rounded-2xl border border-gray-800">
-        <Text className="text-white font-semibold mb-2">
-          Track_01_Master_v3.wav
-        </Text>
 
-        <Text className="text-gray-400 text-xs mb-3">
-          v3 • March 1, 2026 • 3:42
-        </Text>
+            </View>
+            <View className="flex-row gap-5 pt-5 pb-5">
+              <View>
+                <View className="bg-[#4F4F59] p-2 rounded-md">
+                  <User color={"#FFFFFF"} />
+                </View>
+              </View>
+              <View className="flex-1">
+                <Text className="text-white text-xl font-semibold">You</Text>
+                <Text className="text-white text-sm">2 hours ago</Text>
+                <Text className="text-gray-400 text-xl mt-2 ">Sounds great! Can we boost the vocals a bit?</Text>
+              </View>
 
-        {/* Fake Waveform */}
-        <View className="h-10 bg-black rounded-md mb-4" />
 
-        <View className="flex-row gap-3">
-          <TouchableOpacity className="flex-1 bg-[#5B2EFF] py-3 rounded-xl flex-row justify-center items-center gap-2">
-            <Play color="white" size={16} />
-            <Text className="text-white">Play</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="flex-1 bg-[#1F1F1F] py-3 rounded-xl flex-row justify-center items-center gap-2">
-            <Download color="white" size={16} />
-            <Text className="text-white">Download</Text>
-          </TouchableOpacity>
+            </View>
+          </View>
         </View>
-      </View>
+      }
+      {
+        activeTab === "member" && <View className="bg-[#111111] p-4 rounded-2xl border border-gray-800">
+          <ProjectMembers/>
+        </View>
+      }
+
+
+
+
     </ScrollView>
   );
 };
