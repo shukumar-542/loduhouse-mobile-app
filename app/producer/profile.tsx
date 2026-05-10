@@ -21,7 +21,6 @@ const SettingsRow = ({ label , route }: SettingProps) => (
     onPress={()=> router.push(route)}
   >
     <Text className="text-white text-[15px] font-normal">{label}</Text>
-    {/* <Text className="text-zinc-400 text-lg">›</Text> */}
     <ChevronRight size={22} color={"white"} />
   </TouchableOpacity>
 );
@@ -144,7 +143,7 @@ export default function Profile() {
           <SettingsRow label="Profile Setting" route="/settings/profileSetting" />
           <SettingsRow label="Team Member"  route="/(settings)/team-member"  />
           <SettingsRow label="Studio Setup" route="/(settings)/studio-setup" />
-          <SettingsRow label="Change password"  route="/(settings)/change-password"  />
+          <SettingsRow label="Change password"  route="/settings/changePasswordFromSettings"  />
           <SettingsRow label="About Us" route="/(settings)/about-us" />
           <SettingsRow label="Privacy Policy" route="/(settings)/privacy-policy" />
           <SettingsRow label="Terms and Conditions" route="/(settings)/terms" />

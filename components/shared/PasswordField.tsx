@@ -19,8 +19,8 @@ const PasswordInput: React.FC<PasswordProps> = ({
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <View className="mb-6 w-full">
-      <Text className="text-white text-base font-bold mb-2 ml-1">{label}</Text>
+    <View className="mb-6 w-full ">
+      <Text className="text-white text-xl font-bold mb-2 ml-1">{label}</Text>
       <View
         className={`${
           isFocused ? "bg-[#121217]" : ""

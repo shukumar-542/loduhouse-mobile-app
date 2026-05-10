@@ -3,10 +3,10 @@ import { View, ScrollView, KeyboardAvoidingView } from "react-native";
 import { useRouter } from "expo-router";
 
 import { Button } from "@/components/shared/Button";
-import { GeneralText } from "@/components/shared/GeneralText";
 import ShowToast from "@/components/shared/ShowToast";
 import PasswordInput from "@/components/shared/PasswordField";
 import useChangePasswordFromSettings from "@/services/hooks/settings/useChangePasswordFromSettings";
+import Header from "@/components/shared/Header";
 
 const ChangePasswordFromSettings = () => {
   const router = useRouter();
@@ -40,44 +40,47 @@ const ChangePasswordFromSettings = () => {
           contentContainerStyle={{ flexGrow: 1 }}
           keyboardShouldPersistTaps="handled"
         >
-          <View className="flex-1 px-6 pt-8 pb-6 justify-center">
-            <GeneralText
-              title="Change your password"
-              description="Update your account password. Make sure to choose a strong and secure password."
-            />
+          <View className="flex-1 px-6 pt-8 pb-6 ">
+
+
+            <Header title="Change Password" />
 
             <ShowToast
               message={error || successMessage}
               type={error ? "error" : successMessage ? "success" : "info"}
             />
 
-            <PasswordInput
-              label="Current Password"
-              placeholder="**********"
-              value={oldPassword}
-              onChangeText={setOldPassword}
-            />
-
-            <PasswordInput
-              label="New Password"
-              placeholder="**********"
-              value={newPassword}
-              onChangeText={setNewPassword}
-            />
-
-            <PasswordInput
-              label="Confirm New Password"
-              placeholder="**********"
-              value={confirmPassword}
-              onChangeText={setConfirmPassword}
-            />
-
-            <View className="py-3">
-              <Button
-                label={loading ? "Updating Password..." : "Update Password"}
-                onPress={handleChangePassword}
-                disabled={isButtonDisabled}
+            <View className="mt-10">
+              <PasswordInput
+                label="Current Password"
+                placeholder="**********"
+                value={oldPassword}
+                onChangeText={setOldPassword}
               />
+
+              <PasswordInput
+                label="New Password"
+                placeholder="**********"
+                value={newPassword}
+                onChangeText={setNewPassword}
+              />
+
+              <PasswordInput
+                label="Confirm New Password"
+                placeholder="**********"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+            </View>
+            <View className="flex-1 justify-end">
+
+              <View className="py-3">
+                <Button
+                  label={loading ? "Updating Password..." : "Update Password"}
+                  onPress={handleChangePassword}
+                  disabled={isButtonDisabled}
+                />
+              </View>
             </View>
           </View>
         </ScrollView>
