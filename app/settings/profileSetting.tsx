@@ -7,15 +7,16 @@ import {
   ScrollView,
   ActivityIndicator,
   Modal,
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-// import { TextField } from "@/components/shared/TextField";
 import { MobileNumberInput } from "@/components/shared/PhoneNumberField";
 import Header from "@/components/shared/Header";
 import useEditUserProfile from "@/services/hooks/settings/useEditUserProfile";
 import UniversalMediaPicker, {
   MediaItem,
 } from "@/components/shared/UniversalMediaPicker";
+import { Camera } from "lucide-react-native";
 
 export default function ProfileSetting() {
   const {
@@ -44,8 +45,8 @@ export default function ProfileSetting() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0F0B18]">
-      <Header title="Profile Setting" />
+    <SafeAreaView className="flex-1 bg-[#000000]">
+      <Header title="Profile Settings" />
 
       {(error || successMessage) && (
         <View className="px-5 pt-3">
@@ -57,8 +58,8 @@ export default function ProfileSetting() {
             </View>
           )}
           {successMessage && (
-            <View className="px-4 py-3 bg-[#C9A367]/20 border border-[#C9A367] rounded-xl">
-              <Text className="text-[#C9A367] text-sm font-medium text-center">
+            <View className="px-4 py-3 bg-[#5B2EFF]/20 border border-[#5B2EFF] rounded-xl">
+              <Text className="text-[#5B2EFF] text-sm font-medium text-center">
                 {successMessage}
               </Text>
             </View>
@@ -77,25 +78,25 @@ export default function ProfileSetting() {
               source={{
                 uri: avatarUri ?? "https://i.pravatar.cc/150?img=12",
               }}
-              className="w-24 h-24 rounded-full border-2 border-[#C9A367]"
+              className="w-28 h-28 rounded-full border-2 "
             />
             <TouchableOpacity
               onPress={() => setPickerVisible(true)}
-              className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#C9A367] items-center justify-center"
+              className="absolute bottom-0 -right-5  w-8 h-8 rounded-full bg-[#5B2EFF] items-center justify-center"
               activeOpacity={0.8}
             >
-              <Text className="text-[#0E0E0E] text-base">📷</Text>
+              <Text className="text-[#0E0E0E] text-base p-1"><Camera color={"white"} /></Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* <TextField
-          label="Your Name"
-          placeholder="Enter your name"
-          value={name}
-          onChangeText={setName}
-        /> */}
 
+        <Text className="text-white text-xl font-bold mb-2 ml-1">Your Name</Text>
+        <TextInput
+          placeholder="Name"
+          placeholderTextColor={"white"}
+          className="border-[#5B2EFF] border rounded-lg text-white mb-5 px-2"
+        />
         <MobileNumberInput
           label="Mobile Number"
           placeholder="Enter phone number"
@@ -103,33 +104,20 @@ export default function ProfileSetting() {
           onChangeText={setPhone}
         />
 
-        {/* <TextField
-          label="Email"
-          value={email}
-          editable={false}
-          placeholder="Your email address"
-          disabledClassName="bg-gray-800"
-        /> */}
 
-        {/* <TextField
-          label="Location"
-          placeholder="Enter your location"
-          value={location}
-          onChangeText={setLocation}
-        /> */}
       </ScrollView>
 
       <View className="px-5 pb-8">
         <TouchableOpacity
           onPress={saveProfile}
           disabled={loading}
-          className={`rounded-2xl py-4 items-center ${loading ? "bg-[#C9A367]/50" : "bg-[#C9A367]"}`}
+          className={`rounded-2xl py-4 items-center ${loading ? "bg-[#5B2EFF]/50" : "bg-[#5B2EFF]"}`}
           activeOpacity={0.85}
         >
           {loading ? (
             <ActivityIndicator color="#0E0E0E" />
           ) : (
-            <Text className="text-[#0E0E0E] text-base font-bold tracking-widest uppercase">
+            <Text className="text-white text-base font-bold tracking-widest uppercase">
               Save
             </Text>
           )}

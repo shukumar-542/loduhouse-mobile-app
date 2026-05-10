@@ -72,12 +72,12 @@ export const MobileNumberInput: React.FC<InputProps> = ({
       <View
         className={`${
           isFocused ? "bg-[#121217]" : ""
-        } border border-[#F1F1F2] rounded-xl px-4 py-2 flex-row items-center`}
+        } border border-[#5B2EFF] rounded-xl px-4 py-2 flex-row items-center`}
       >
         {/* Country Code Selector */}
         <TouchableOpacity
           onPress={() => setModalVisible(true)}
-          className="flex-row items-center mr-2 pr-2 border-r border-[#F1F1F2]"
+          className="flex-row items-center mr-2 pr-2 border-r border-[#5B2EFF]"
         >
           <Text className="text-base mr-1">{selectedCode.flag}</Text>
           <Text className="text-white text-base font-medium">

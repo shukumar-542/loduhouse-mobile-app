@@ -20,7 +20,7 @@ interface CustomCalenderProps {
     onDayPress?: (dateString: string) => void;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Component
 
 const CustomCalender: React.FC<CustomCalenderProps> = ({
     bookedDates = [],
@@ -29,7 +29,7 @@ const CustomCalender: React.FC<CustomCalenderProps> = ({
 }) => {
     const [currentDate, setCurrentDate] = useState(dayjs());
 
-    // ── Day cell ──────────────────────────────────────────────────────────────
+    // ── Day cell
 
     const renderDay = ({ date, state }: { date?: any; state?: string }) => {
         if (!date) return null;
@@ -43,7 +43,7 @@ const CustomCalender: React.FC<CustomCalenderProps> = ({
                 <TouchableOpacity
                     onPress={() => onDayPress?.(date.dateString)}
                     className={`
-                        w-[45px] h-[55px] rounded-xl items-center justify-center mb-2
+                        w-[40px] h-[45px] rounded-xl items-center justify-center mb-2
                         bg-black
                         ${isToday ? "border border-[#5B2EFF]" : ""}
                     `}
@@ -71,7 +71,7 @@ const CustomCalender: React.FC<CustomCalenderProps> = ({
             <TouchableOpacity
                 onPress={() => onDayPress?.(date.dateString)}
                 className={`
-                    w-[45px] h-[55px] rounded-xl items-center justify-center mb-2
+                    w-[40px] h-[45px] rounded-xl items-center justify-center mb-2
                     ${isUnavailable ? "bg-[#2A1212]" : "bg-black"}
                     ${isToday ? "border border-[#5B2EFF]" : ""}
                 `}

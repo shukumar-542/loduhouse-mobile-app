@@ -6,7 +6,7 @@ import { PrimaryButton } from "@/components/shared/PrimaryButton";
 
 const StatusCard = ({ icon, count, label, bgColor }: any) => {
   return (
-    <View className="w-[48%] bg-[#111111] border border-gray-800 rounded-2xl p-4 m-1">
+    <View className="w-[47%] bg-[#111111] border border-gray-800 rounded-2xl p-4 m-1">
 
       <View className="flex-row items-center gap-3">
         <View className={`w-10 h-10 rounded-lg items-center justify-center mb-2`} style={{ backgroundColor: bgColor }}>
@@ -83,28 +83,28 @@ export default function Home() {
 
       <View className="flex-row flex-wrap">
         <StatusCard
-          icon={<Mic color="white" size={18} />}
+          icon={<Mic color="white" size={17} />}
           count="1"
           label="Recording"
           bgColor="#1E3A8A"
         />
 
         <StatusCard
-          icon={<Music color="white" size={18} />}
+          icon={<Music color="white" size={17} />}
           count="2"
           label="Mixing"
           bgColor="#6D28D9"
         />
 
         <StatusCard
-          icon={<Volume2 color="white" size={18} />}
+          icon={<Volume2 color="white" size={17} />}
           count="1"
           label="Mastering"
           bgColor="#92400E"
         />
 
         <StatusCard
-          icon={<CheckCircle color="white" size={18} />}
+          icon={<CheckCircle color="white" size={17} />}
           count="0"
           label="Delivered"
           bgColor="#065F46"

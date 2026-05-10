@@ -18,7 +18,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
   };
 
   return (
-    <View className="w-full flex-row items-center justify-between bg-transparent px-3 pb-3 border-b border-gray-700">
+    <View className="w-full flex-row items-center justify-between bg-transparent px-3 pb-3 ">
       <TouchableOpacity
         className="w-10 h-10 rounded-full bg-[#2a2a2a] items-center justify-center"
         onPress={handleBackPress}
@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
         <Ionicons name="arrow-back" size={22} color="#FFFFFF" />
       </TouchableOpacity>
 
-      <Text className="text-white text-lg font-semibold">{title}</Text>
+      <Text className="text-white text-2xl font-semibold">{title}</Text>
 
       {/* Spacer to keep layout balanced */}
       <View style={{ width: 40 }} />

@@ -9,7 +9,7 @@ export default function ProducerTabs() {
                 tabBarStyle: {
                     backgroundColor: "#0F0B18",
                     borderRadius: 30,
-                    height: 70,
+                    height: 74,
                     marginHorizontal: 20,
                     marginBottom: 10,
                     position: "absolute",
