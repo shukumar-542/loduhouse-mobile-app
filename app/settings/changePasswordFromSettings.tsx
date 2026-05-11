@@ -34,7 +34,7 @@ const ChangePasswordFromSettings = () => {
     !oldPassword || !newPassword || !confirmPassword || loading;
 
   return (
-    <View className="flex-1 bg-[#0F0B18]">
+    <View className="flex-1 bg-[#000000]">
       <KeyboardAvoidingView className="flex-1" behavior="padding">
         <ScrollView
           contentContainerStyle={{ flexGrow: 1 }}

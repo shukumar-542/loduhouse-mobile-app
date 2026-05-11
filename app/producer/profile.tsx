@@ -144,9 +144,9 @@ export default function Profile() {
           <SettingsRow label="Team Member"  route="/(settings)/team-member"  />
           <SettingsRow label="Studio Setup" route="/(settings)/studio-setup" />
           <SettingsRow label="Change password"  route="/settings/changePasswordFromSettings"  />
-          <SettingsRow label="About Us" route="/(settings)/about-us" />
-          <SettingsRow label="Privacy Policy" route="/(settings)/privacy-policy" />
-          <SettingsRow label="Terms and Conditions" route="/(settings)/terms" />
+          <SettingsRow label="About Us" route="/settings/aboutUs" />
+          <SettingsRow label="Privacy Policy" route="/settings/privacyPolicy" />
+          <SettingsRow label="Terms and Conditions" route="/settings/terms" />
           
         </View>
       </View>
