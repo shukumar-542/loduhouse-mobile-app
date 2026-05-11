@@ -45,7 +45,7 @@ const Field: React.FC<FieldProps> = ({
           ${
             isFocused
               ? "border-[#5B2EFF] bg-[#1A1A1A]"
-              : "border-gray-700 bg-black"
+              : " bg-black"
           }
         `}
         style={{

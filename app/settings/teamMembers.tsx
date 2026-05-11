@@ -2,8 +2,9 @@ import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
+import BackButton from '@/components/shared/BackButton'
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+// ─── Constants 
 
 const ACCENT = '#5B2EFF'
 
@@ -68,7 +69,7 @@ const OVERALL_STATS = [
     { label: 'Pending', value: '$99k', icon: 'time-outline', iconColor: '#F5A623' },
 ]
 
-// ─── Sub Components ──────────────────────────────────────────────────────────
+// ─── Sub Components 
 
 const StatCard = ({ label, value, icon, iconColor }: typeof OVERALL_STATS[0]) => (
     <View className="flex-1 bg-[#000000] rounded-lg p-3">
@@ -143,7 +144,10 @@ const EngineerEarningCard = ({ member }: { member: typeof MEMBERS[0] }) => (
     </View>
 )
 
-const MemberCard = ({ member }: { member: typeof MEMBERS[0] }) => (
+const MemberCard = ({ member, onEdit }: {
+    member: typeof MEMBERS[0]
+    onEdit: () => void 
+}) => (
     <View className="bg-[#111111] rounded-2xl p-4 mb-4">
         <View className="flex-row items-start gap-3 mb-3">
             <View className="w-12 h-12 rounded-full items-center justify-center" style={{ backgroundColor: member.iconBg }}>
@@ -188,7 +192,7 @@ const MemberCard = ({ member }: { member: typeof MEMBERS[0] }) => (
         </View>
 
         <View className="flex-row gap-3">
-            <TouchableOpacity className="flex-1 flex-row items-center justify-center gap-2 border border-gray-600 rounded-xl py-2.5">
+            <TouchableOpacity onPress={onEdit} className="flex-1 flex-row items-center justify-center gap-2 border border-gray-600 rounded-xl py-2.5">
                 <Ionicons name="create-outline" size={15} color="#fff" />
                 <Text className="text-white text-sm font-medium">Edit Profile</Text>
             </TouchableOpacity>
@@ -199,7 +203,7 @@ const MemberCard = ({ member }: { member: typeof MEMBERS[0] }) => (
     </View>
 )
 
-// ─── Main Screen ─────────────────────────────────────────────────────────────
+// ─── Main Screen
 
 export default function TeamMembers() {
 
@@ -207,18 +211,10 @@ export default function TeamMembers() {
     const [activeTab, setActiveTab] = useState<'engineers' | 'earnings'>('engineers')
 
     return (
-        <View className="flex-1 bg-[#000000] px-4 pt-10">
+        <View className="flex-1 bg-[#000000] px-4 pt-5">
 
             {/* Header */}
-            <View className="flex-row items-center gap-3 mb-5">
-                <TouchableOpacity className="w-8 h-8 items-center justify-center" onPress={() => router.back()}>
-                    <Ionicons name="arrow-back" size={22} color="#fff" />
-                </TouchableOpacity>
-                <View>
-                    <Text className="text-white text-xl font-bold">Team Members</Text>
-                    <Text className="text-gray-400 text-xs">Manage your engineering team</Text>
-                </View>
-            </View>
+            <BackButton title='Team Members' subTitle='Manage your studio engineers and view earnings' />
 
             {/* Tab Switcher */}
             <View className="flex-row bg-[#111111] rounded-xl p-1 mb-4">
@@ -238,13 +234,25 @@ export default function TeamMembers() {
             {activeTab === 'engineers' ? (
                 <>
                     {/* Add New Engineer Button */}
-                    <TouchableOpacity className="flex-row items-center justify-center gap-2 rounded-xl py-3 mb-5" style={{ backgroundColor: ACCENT }}>
+                    <TouchableOpacity onPress={() => router.push("/settings/addNewEngineers")} className="flex-row items-center justify-center gap-2 rounded-xl py-3 mb-5" style={{ backgroundColor: ACCENT }}>
                         <Ionicons name="add" size={18} color="#fff" />
                         <Text className="text-white font-semibold text-sm">Add New Engineer</Text>
                     </TouchableOpacity>
 
                     <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 24 }}>
-                        {MEMBERS.map((member) => <MemberCard key={member.id} member={member} />)}
+                        {MEMBERS.map((member) => <MemberCard
+                            onEdit={() => router.push({
+                                pathname: `/settings/editEngineer/${member.id}`,
+                                params: {
+                                    name: member.name,
+                                    email: member.email,
+                                    phone: member.phone,
+                                    speciality: member.role,
+                                    experience: member.experience,
+                                    avatar: String(member.id),
+                                }
+                            })}
+                            key={member.id} member={member} />)}
                     </ScrollView>
                 </>
             ) : (
