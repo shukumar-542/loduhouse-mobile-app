@@ -141,7 +141,7 @@ export default function Profile() {
         </Text>
         <View className="mb-2">
           <SettingsRow label="Profile Setting" route="/settings/profileSetting" />
-          <SettingsRow label="Team Member"  route="/(settings)/team-member"  />
+          <SettingsRow label="Team Member"  route="/settings/teamMembers"  />
           <SettingsRow label="Studio Setup" route="/(settings)/studio-setup" />
           <SettingsRow label="Change password"  route="/settings/changePasswordFromSettings"  />
           <SettingsRow label="About Us" route="/settings/aboutUs" />
