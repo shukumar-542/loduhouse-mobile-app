@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
-import { useRouter } from 'expo-router'
+import { router, useRouter } from 'expo-router'
 import BackButton from '@/components/shared/BackButton'
 
 // ─── Constants 
@@ -196,8 +196,8 @@ const MemberCard = ({ member, onEdit }: {
                 <Ionicons name="create-outline" size={15} color="#fff" />
                 <Text className="text-white text-sm font-medium">Edit Profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity className="flex-1 items-center justify-center rounded-xl py-2.5" style={{ backgroundColor: ACCENT }}>
-                <Text className="text-white text-sm font-medium">View Sessions</Text>
+            <TouchableOpacity onPress={()=> router.push("/settings/engineeriSession")} className="flex-1 items-center justify-center bg-[#201741]  rounded-xl py-2.5">
+                <Text className="text-[#5B2EFF] text-sm font-medium">View Sessions</Text>
             </TouchableOpacity>
         </View>
     </View>
@@ -279,4 +279,4 @@ export default function TeamMembers() {
             )}
         </View>
     )
-}
+} 
