@@ -211,7 +211,7 @@ export default function TeamMembers() {
     const [activeTab, setActiveTab] = useState<'engineers' | 'earnings'>('engineers')
 
     return (
-        <View className="flex-1 bg-[#000000] px-4 pt-5">
+        <View className="flex-1  bg-[#000000]  p-4 ">
 
             {/* Header */}
             <BackButton title='Team Members' subTitle='Manage your studio engineers and view earnings' />
