@@ -11,6 +11,13 @@ import { router } from "expo-router";
 import AudioPlayerCard from "../../components/AudioPlayerCard/AudioPlayerCard ";
 import ProjectMembers from "@/components/Projectmembers/Projectmembers";
 
+const BAR_COUNT = 40
+
+const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
+    const seed = Math.sin(i * 127.1 + 311.7) * 43758.5453
+    return 0.15 + Math.abs(seed - Math.floor(seed)) * 0.85
+})
+
 const ProjectDetails = () => {
   const [activeTab, setActiveTab] = useState("file")
 
@@ -154,9 +161,55 @@ const ProjectDetails = () => {
             </View>
           </View>
           {/* File Card */}
-          <View className="bg-[#111111] p-4 rounded-2xl border border-gray-800">
+                    <View className="bg-[#111114] rounded-3xl p-5 w-full max-w-[380px] border border-[#1E1E2A] self-center">
+
+            {/* File Info */}
+            <Text className="text-white text-lg font-bold tracking-tight mb-1" numberOfLines={1}>
+                Track_01_Master_v3.wav
+            </Text>
+            <Text className="text-[#666680] text-sm font-medium mb-5">
+                v3 • March 1, 2026 • 3:42
+            </Text>
+
+            {/* Waveform (static) */}
+            <View className="flex-row items-center h-14 bg-[#0A0A0F] rounded-xl px-2.5 mb-5 overflow-hidden">
+                {bars.map((h, i) => (
+                    <View
+                        key={i}
+                        className="bg-[#2A2A3A] rounded-sm mx-[1.5px]"
+                        style={{ width: 3, height: h * 44 }}
+                    />
+                ))}
+            </View>
+
+            {/* Buttons */}
+            <View className="flex-row gap-x-3">
+                {/* Play → navigate */}
+                <TouchableOpacity
+                    onPress={() => router.push('/audioPlayers/audioPlayer')}
+                    activeOpacity={0.8}
+                    className="flex-1 bg-[#5B2EFF] rounded-2xl py-3.5 flex-row items-center justify-center gap-x-2"
+                >
+                    <Play size={18} color="#fff" fill="#fff" />
+                    <Text className="text-white font-bold text-base">Play</Text>
+                </TouchableOpacity>
+
+                {/* Download */}
+                <TouchableOpacity
+                    activeOpacity={0.8}
+                    className="flex-1 bg-[#1A1A24] rounded-2xl py-3.5 flex-row items-center justify-center gap-x-2 border border-[#2A2A3A]"
+                >
+                    <Download size={18} color="#fff" />
+                    <Text className="text-white font-bold text-base">Download</Text>
+                </TouchableOpacity>
+            </View>
+
+        </View>
+
+
+          {/* <View className="bg-[#111111] p-4 rounded-2xl border border-gray-800">
             <AudioPlayerCard />
-          </View>
+          </View> */}
         </View>
       }
       {
