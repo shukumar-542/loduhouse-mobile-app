@@ -1,6 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { CalendarDays, Clock, Headphones, Hourglass, MapPin } from 'lucide-react-native'
+import { CalendarDays, Clock, Headphones, MapPin } from 'lucide-react-native'
+import { router } from 'expo-router'
 
 export default function ApprovedBooking() {
     return (
@@ -9,7 +10,7 @@ export default function ApprovedBooking() {
             {/* Header: Title and Status Badge */}
             <View className="flex-row justify-between items-center mb-5">
                 <Text className="text-white text-2xl font-bold">
-                    Summer Mixtape
+                    Summer Mixtapes
                 </Text>
 
                 <View className="bg-[#00C95033] px-3 py-1.5 rounded-full">
@@ -60,6 +61,7 @@ export default function ApprovedBooking() {
             <View className="flex-row items-center justify-between gap-x-4">
                 {/* View Details Button */}
                 <TouchableOpacity
+                    onPress={() =>  router.push("/producerProject/projectDetails")}
                     className="flex-1 bg-[#5B2EFF] py-4 rounded-2xl items-center justify-center active:opacity-80"
                 >
                     <Text className="text-white font-semibold text-lg">
