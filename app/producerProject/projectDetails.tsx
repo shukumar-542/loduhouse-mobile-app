@@ -8,13 +8,12 @@ import {
 import React, { useState } from "react";
 import { ArrowLeft, CheckCircle, Play, Download, Headphones, User } from "lucide-react-native";
 import { router } from "expo-router";
-import AudioPlayerCard from "../../components/AudioPlayerCard/AudioPlayerCard ";
 import ProjectMembers from "@/components/Projectmembers/Projectmembers";
 
 const BAR_COUNT = 40
 
 const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
-    const seed = Math.sin(i * 127.1 + 311.7) * 43758.5453
+    const seed = Math.sin(i * 127.1 + 311.7) * 43758.5453 
     return 0.15 + Math.abs(seed - Math.floor(seed)) * 0.85
 })
 

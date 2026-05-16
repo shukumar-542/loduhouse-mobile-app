@@ -82,6 +82,7 @@ const dashboard = () => {
 
             {data.map((item) => (
                 <PendingCard
+                    onPress={() => router.push(`/producerProject/pendingProjectDetails/${item.id}`)}
                     key={item.id}
                     item={item}
                     onApprove={handleApprove}

@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import { Calendar, Clock } from "lucide-react-native";
 
-const PendingCard = ({ item, onApprove, onReject }: any) => {
+const PendingCard = ({ item, onApprove, onReject , onPress }: any) => {
   return (
     <View className="bg-[#111111] border border-gray-800 rounded-2xl p-4 mb-4">
 
@@ -64,7 +64,7 @@ const PendingCard = ({ item, onApprove, onReject }: any) => {
       <View className="h-[1px] bg-gray-800 my-4" />
 
       {/* View Details */}
-      <TouchableOpacity>
+      <TouchableOpacity onPress={onPress}>
         <Text className="text-[#5B2EFF] text-md font-medium">
           View Details
         </Text>
