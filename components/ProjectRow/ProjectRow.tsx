@@ -103,7 +103,7 @@ const TrackCard = ({ track }: { track: Track }) => (
 const ProjectRow = ({ project }: { project: Project }) => {
     const [expanded, setExpanded] = useState(project.id === "1");
   return (
-    <View className="bg-[#111111] rounded-2xl mb-3 overflow-hidden">
+    <View className="bg-[#111111] rounded-2xl mb-3  overflow-hidden">
             {/* Header */}
             <TouchableOpacity
                 onPress={() => setExpanded((v) => !v)}

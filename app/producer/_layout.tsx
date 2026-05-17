@@ -1,5 +1,8 @@
+import AnimatedTabIcon from "@/components/shared/AnimatedTabIcon";
 import { Tabs } from "expo-router";
 import { Calendar, CreditCard, Folder, Home, User } from "lucide-react-native";
+
+
 
 export default function ProducerTabs() {
     return (
@@ -7,32 +10,36 @@ export default function ProducerTabs() {
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: {
-                    backgroundColor: "#0F0B18",
-                    borderRadius: 30,
+                    backgroundColor: "#111111",
+                    borderRadius: 20,
                     height: 74,
-                    marginHorizontal: 20,
-                    marginBottom: 10,
+                    marginHorizontal: 14,
+                    marginBottom: 8,
                     position: "absolute",
-                    borderTopWidth: 0,
-                    paddingTop: 5
+                    borderWidth: 1,
+                    borderColor: "#4F4F59",
+                    paddingTop: 5,
+                    paddingBottom : 0
                 },
-                tabBarActiveTintColor: "#7C3AED",
-                tabBarInactiveTintColor: "#6B7280",
+                tabBarActiveTintColor: "#5B2EFF",
+                tabBarInactiveTintColor: "#4F4F59",
             }}
         >
             <Tabs.Screen
                 name="dashboard"
                 options={{
                     title: "Dashboard",
-                    tabBarIcon: ({ color, size }) => <Home color={color} size={size} />,
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <AnimatedTabIcon icon={Home} color={color} size={size} focused={focused} />
+                    ),
                 }}
             />
             <Tabs.Screen
                 name="bookings"
                 options={{
                     title: "Bookings",
-                    tabBarIcon: ({ color, size }) => (
-                        <Calendar color={color} size={size} />
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <AnimatedTabIcon icon={Calendar} color={color} size={size} focused={focused} />
                     ),
                 }}
             />
@@ -41,7 +48,9 @@ export default function ProducerTabs() {
                 name="projects"
                 options={{
                     title: "Projects",
-                    tabBarIcon: ({ color, size }) => <Folder color={color} size={size} />,
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <AnimatedTabIcon icon={Folder} color={color} size={size} focused={focused} />
+                    ),
                 }}
             />
 
@@ -49,8 +58,8 @@ export default function ProducerTabs() {
                 name="messages"
                 options={{
                     title: "Messages",
-                    tabBarIcon: ({ color, size }) => (
-                        <CreditCard color={color} size={size} />
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <AnimatedTabIcon icon={CreditCard} color={color} size={size} focused={focused} />
                     ),
                 }}
             />
@@ -59,7 +68,9 @@ export default function ProducerTabs() {
                 name="profile"
                 options={{
                     title: "Profile",
-                    tabBarIcon: ({ color, size }) => <User color={color} size={size} />,
+                    tabBarIcon: ({ color, size, focused }) => (
+                        <AnimatedTabIcon icon={User} color={color} size={size} focused={focused} />
+                    ),
                 }}
             />
         </Tabs>

@@ -79,7 +79,7 @@ const Login = () => {
   const displayError = error || googleError;
 
   return (
-    <View className="flex-1 bg-[#0F0918]">
+    <View className="flex-1 bg-[#000000]">
       <KeyboardAvoidingView
         className="flex-1"
         behavior="padding"
@@ -91,8 +91,8 @@ const Login = () => {
           showsVerticalScrollIndicator={false}
         >
           <View className="flex-1 px-6 pt-8 pb-6 justify-center">
-            <View className="items-center mb-4 px-5">
-              <Image source={LoginLogo} style={{ width: "100%", height: 100 }} />
+            <View className="items-center mb-4 ">
+              <Image resizeMode="contain" source={LoginLogo} style={{ width: "100%", height: 100 }} />
             </View>
 
             <AuthText

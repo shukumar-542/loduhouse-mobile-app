@@ -22,7 +22,7 @@ export const EmailInput: React.FC<InputProps> = ({
       <View
         className={`${
           isFocused ? "bg-[#121217]" : ""
-        } border border-[#F1F1F2] rounded-xl px-4`}
+        } border border-[#4F4F59] rounded-xl px-4`}
       >
         <TextInput
           placeholder={placeholder}

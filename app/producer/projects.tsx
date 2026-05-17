@@ -97,9 +97,11 @@ export default function Projects() {
                 </View>
 
                 {/* Projects */}
-                {filtered.map((project) => (
-                    <ProjectRow key={project.id} project={project} />
-                ))}
+                <View className="mx-5">
+                    {filtered.map((project) => (
+                        <ProjectRow key={project.id} project={project} />
+                    ))}
+                </View>
             </ScrollView>
         </View>
     );

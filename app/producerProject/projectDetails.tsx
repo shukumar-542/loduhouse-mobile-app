@@ -10,7 +10,7 @@ import { ArrowLeft, CheckCircle, Play, Download, Headphones, User } from "lucide
 import { router } from "expo-router";
 import ProjectMembers from "@/components/Projectmembers/Projectmembers";
 
-const BAR_COUNT = 40
+const BAR_COUNT = 54
 
 const bars = Array.from({ length: BAR_COUNT }, (_, i) => {
     const seed = Math.sin(i * 127.1 + 311.7) * 43758.5453 
@@ -66,7 +66,7 @@ const ProjectDetails = () => {
           <Text className="text-white text-md flex-1 mr-2">
             Working on the summer release with collaborative mixing sessions
           </Text>
-          <Text className="text-[#5B2EFF]">View Details</Text>
+          <Text onPress={()=> router.push("/producerProject/pendingProjectDetails/:id") } className="text-[#5B2EFF]">View Details</Text>
         </View>
       </View>
 
@@ -175,7 +175,7 @@ const ProjectDetails = () => {
                 {bars.map((h, i) => (
                     <View
                         key={i}
-                        className="bg-[#2A2A3A] rounded-sm mx-[1.5px]"
+                        className="bg-[#5B2EFF] rounded-sm mx-[1.5px]"
                         style={{ width: 3, height: h * 44 }}
                     />
                 ))}
@@ -206,9 +206,6 @@ const ProjectDetails = () => {
         </View>
 
 
-          {/* <View className="bg-[#111111] p-4 rounded-2xl border border-gray-800">
-            <AudioPlayerCard />
-          </View> */}
         </View>
       }
       {
