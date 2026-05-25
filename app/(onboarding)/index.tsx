@@ -16,7 +16,7 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#0F0B18] px-6 justify-between">
+    <SafeAreaView className="flex-1 bg-[#000000] px-6 justify-between">
 
       {/* Top Section */}
       <View className="items-center mt-10">
