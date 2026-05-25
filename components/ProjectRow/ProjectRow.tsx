@@ -1,6 +1,7 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import { CheckCheck, ChevronDown, ChevronUp, Folder, Mic, Music, SlidersHorizontal, Sparkles } from 'lucide-react-native';
+import { router } from 'expo-router';
 
 
 
@@ -51,44 +52,48 @@ const TrackCard = ({ track }: { track: Track }) => (
             </View>
 
             {/* Info */}
-            <View className="flex-1">
-                <Text className="text-white font-bold text-[15px]">{track.title}</Text>
-                <Text className="text-zinc-500 text-xs mt-0.5">
-                    {track.duration} • {track.updatedAgo}
-                </Text>
 
-                {/* Icon buttons row */}
-                <View className="flex-row items-center mt-2">
-                    {STEP_ICONS.map((Icon, i) => {
-                        const activeStep = STATUS_STEPS[track.status];
-                        const isCompleted = i < activeStep;
-                        const isCurrent = i === activeStep;
-                        return (
-                            <View key={i} className="flex-row items-center">
-                                <View
-                                    className="w-7 h-7 rounded-full bg-transparent items-center justify-center"
-                                    style={{
-                                        borderWidth: 1.5,
-                                        borderColor: isCompleted
-                                            ? "#00C95080"
-                                            : isCurrent
-                                                ? "#5B2EFF"
-                                                : "#3f3f46",
-                                    }}
-                                >
-                                    <Icon
-                                        size={14}
-                                        color={isCompleted ? "#00C950" : isCurrent ? "#5B2EFF" : "#6b7280"}
-                                    />
+            <Pressable onPress={()=> router.push("/producerProject/ongoinngProjectSummery")} className="flex-1 flex-row items-center justify-between">
+                <View className="flex-1">
+                    <Text className="text-white font-bold text-[15px]">{track.title}</Text>
+                    <Text className="text-zinc-500 text-xs mt-0.5">
+                        {track.duration} • {track.updatedAgo}
+                    </Text>
+
+                    {/* Icon buttons row */}
+                    <View className="flex-row items-center mt-2">
+                        {STEP_ICONS.map((Icon, i) => {
+                            const activeStep = STATUS_STEPS[track.status];
+                            const isCompleted = i < activeStep;
+                            const isCurrent = i === activeStep;
+                            return (
+                                <View key={i} className="flex-row items-center">
+                                    <View
+                                        className="w-7 h-7 rounded-full bg-transparent items-center justify-center"
+                                        style={{
+                                            borderWidth: 1.5,
+                                            borderColor: isCompleted
+                                                ? "#00C95080"
+                                                : isCurrent
+                                                    ? "#5B2EFF"
+                                                    : "#3f3f46",
+                                        }}
+                                    >
+                                        <Icon
+                                            size={14}
+                                            color={isCompleted ? "#00C950" : isCurrent ? "#5B2EFF" : "#6b7280"}
+                                        />
+                                    </View>
+                                    {i < 3 && (
+                                        <Text className="text-zinc-600 text-xs mx-1">—</Text>
+                                    )}
                                 </View>
-                                {i < 3 && (
-                                    <Text className="text-zinc-600 text-xs mx-1">—</Text>
-                                )}
-                            </View>
-                        );
-                    })}
+                            );
+                        })}
+                    </View>
                 </View>
-            </View>
+            </Pressable>
+
 
             {/* Status badge */}
             <View className={`px-3 py-1.5 rounded-full ${STATUS_COLORS[track.status].bg}`}>
@@ -102,8 +107,8 @@ const TrackCard = ({ track }: { track: Track }) => (
 
 const ProjectRow = ({ project }: { project: Project }) => {
     const [expanded, setExpanded] = useState(project.id === "1");
-  return (
-    <View className="bg-[#111111] rounded-2xl mb-3  overflow-hidden">
+    return (
+        <View className="bg-[#111111] rounded-2xl mb-3  overflow-hidden">
             {/* Header */}
             <TouchableOpacity
                 onPress={() => setExpanded((v) => !v)}
@@ -133,7 +138,7 @@ const ProjectRow = ({ project }: { project: Project }) => {
                 </View>
             )}
         </View>
-  )
+    )
 }
 
 export default ProjectRow
